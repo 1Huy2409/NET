@@ -27,45 +27,5 @@ namespace QLBS.Utils
                 Role = user.Role
             };
         }
-        public static BookDTO ToDTO(Book book)
-        {
-            return new BookDTO
-            {
-                Id = book.ID,
-                Title = book.Title,
-                Author = book.Author,
-                Price = book.Price,
-                Stock = book.Stock,
-                CategoryName = book.Category?.Name,
-                ImageUrl = book.ImageUrl
-            };
-        }
-        public static CategoryDTO ToDTO(Category category)
-        {
-            return new CategoryDTO
-            {
-                Id = category.CategoryId,
-                Name = category.Name,
-            };
-        }
-        public static OrderDTO ToDTO(Order order)
-        {
-            return new OrderDTO
-            {
-                Id = order.ID,
-                UserName = order.User.UserName,
-                OrderDate = order.OrderDate,
-                TotalAmount = order.TotalPrice,
-                OrderDetails = order.OrderDetails.Select(od => new OrderDetailDTO
-                {
-                    Id = od.ID,
-                    BookId = od.BookId,
-                    BookTitle = od.Book.Title,
-                    Quantity = od.quantity,
-                    Price = od.price,
-                    Subtotal = od.price * od.quantity
-                }).ToList(),
-            };
-        }
     }
 }

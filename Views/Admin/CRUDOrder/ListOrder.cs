@@ -1,9 +1,11 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
+using QLBS.DTOs.Order;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,8 +16,8 @@ namespace QLBS.Views.Admin.CRUDOrder
 {
     public partial class ListOrder : Form
     {
-        private List<Order> currentOrders = new List<Order>();
-        private List<Order> defaultOrders = new List<Order>();
+        private List<OrderDTO> currentOrders = new List<OrderDTO>();
+        private List<OrderDTO> defaultOrders = new List<OrderDTO>();
         public ListOrder()
         {
             InitializeComponent();
@@ -26,7 +28,7 @@ namespace QLBS.Views.Admin.CRUDOrder
         {
             LoadOrders(defaultOrders);
         }
-        private void LoadOrders(List<Order> list)
+        private void LoadOrders(List<OrderDTO> list)
         {
             currentOrders = list;
             dgvOrders.Columns.Clear();
@@ -37,7 +39,7 @@ namespace QLBS.Views.Admin.CRUDOrder
             dgvOrders.Rows.Clear();
             foreach (var order in list)
             {
-                dgvOrders.Rows.Add(order.ID, order.User.Name, order.OrderDate.ToString("dd/MM/yyyy"),order.TotalPrice.ToString("N0") + "đ");
+                dgvOrders.Rows.Add(order.Id, order.UserName, order.OrderDate.ToString("dd/MM/yyyy"),order.TotalAmount.ToString("N0") + "đ");
             }
         }
         private void dgvOrders_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -49,9 +51,9 @@ namespace QLBS.Views.Admin.CRUDOrder
         {
             if (dgvOrders.CurrentRow != null)
             {
-                int orderId = Convert.ToInt32(dgvOrders.CurrentRow.Cells[0].Value);
-                var order = OrderBLL.getInstance().GetOrderById(orderId);
-                if (order != null)
+                int orderId = Convert.ToInt32(dgvOrders.CurrentRow.Cells["ID"].Value);
+                var orderDetails = OrderDetailBLL.getInstance().GetOrderDetails(orderId);
+                if (orderDetails != null)
                 {
                     dgvOrderDetails.Columns.Clear();
                     dgvOrderDetails.Columns.Add("Title", "Tên sách");
@@ -59,13 +61,13 @@ namespace QLBS.Views.Admin.CRUDOrder
                     dgvOrderDetails.Columns.Add("quantity", "Số lượng");
                     dgvOrderDetails.Columns.Add("Tổng giá", "Tổng giá");
                     dgvOrderDetails.Rows.Clear();
-                    foreach (var detail in order.OrderDetails)
+                    foreach (var detail in orderDetails)
                     {
                         dgvOrderDetails.Rows.Add(
-                            detail.Book.Title,
-                            detail.price.ToString("N0"),
-                            detail.quantity,
-                            (detail.price * detail.quantity).ToString("N0")
+                            detail.BookTitle,
+                            detail.Price.ToString("N0"),
+                            detail.Quantity,
+                            detail.Subtotal.ToString("N0")
                         );
                     }
                 }    
@@ -75,21 +77,21 @@ namespace QLBS.Views.Admin.CRUDOrder
         private void btnSearch_Click(object sender, EventArgs e)
         {
             string keyword = txtSearch.Text.Trim().ToLower();
-            List<Order> orders = OrderBLL.getInstance().GetOrderByUserName(keyword);
+            List<OrderDTO> orders = OrderBLL.getInstance().GetOrderByUserName(keyword);
             LoadOrders(orders);
         }
 
         private void cbSort_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selected = cbSort.SelectedItem.ToString();
-            List<Order> sortedList = currentOrders;
+            List<OrderDTO> sortedList = currentOrders;
             switch(selected)
             {
                 case "Mã đơn tăng dần":
-                    sortedList = sortedList.OrderBy(o => o.ID).ToList();
+                    sortedList = sortedList.OrderBy(o => o.Id).ToList();
                     break;
                 case "Mã đơn giảm dần":
-                    sortedList = sortedList.OrderByDescending(o => o.ID).ToList();
+                    sortedList = sortedList.OrderByDescending(o => o.Id).ToList();
                     break;
                 case "Ngày đặt mới nhất":
                     sortedList = sortedList.OrderByDescending(o => o.OrderDate).ToList();
@@ -98,10 +100,10 @@ namespace QLBS.Views.Admin.CRUDOrder
                     sortedList = sortedList.OrderBy(o => o.OrderDate).ToList();
                     break;
                 case "Tổng tiền tăng dần":
-                    sortedList = sortedList.OrderBy(o => o.TotalPrice).ToList();
+                    sortedList = sortedList.OrderBy(o => o.TotalAmount).ToList();
                     break;
                 case "Tổng tiền giảm dần":
-                    sortedList = sortedList.OrderByDescending(o => o.TotalPrice).ToList();
+                    sortedList = sortedList.OrderByDescending(o => o.TotalAmount).ToList();
                     break;
             }
             LoadOrders(sortedList);

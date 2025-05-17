@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using QLBS.BLL;
+using QLBS.DTOs.User;
 using QLBS.Utils;
 using QLBS.Views.Admin;
 using QLBS.Views.Customer;
@@ -42,10 +43,13 @@ namespace QLBS.Views
                 return;
             }
             // lấy value từ user name và password đưa vào bll authcontroller để kiểm tra
-            var UserName = txtUserName.Text;
-            var Password = txtPassword.Text;
-            bool checkLogin = AuthBLL.getInstance().Login(UserName, Password);
-            if (checkLogin)
+            var userLogin = new UserLoginDTO
+            {
+                UserName = txtUserName.Text,
+                Password = txtPassword.Text,
+            };
+            UserDTO user = UserBLL.getInstance().Login(userLogin);
+            if (user!=null)
             {
                 // chuyen sang form khac
                 if (SessionManager.CurrentUser.Role == "Admin")

@@ -1,5 +1,6 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
+using QLBS.DTOs.Order;
 using QLBS.Utils;
 using System;
 using System.Collections.Generic;
@@ -56,10 +57,10 @@ namespace QLBS.Views.Customer.Buy
         private void btnOrder_Click(object sender, EventArgs e)
         {
             // create new order
-            Order newOrder = new Order
+            OrderCreateDTO newOrder = new OrderCreateDTO
             {
                 OrderDate = DateTime.Now,
-                TotalPrice = Convert.ToDecimal(SessionManager.Cart.Sum(i => i.Book.Price * i.Quantity)),
+                TotalAmount = Convert.ToDecimal(SessionManager.Cart.Sum(i => i.Book.Price * i.Quantity)),
                 UserId = SessionManager.CurrentUser.ID
             };
             OrderBLL.getInstance().AddOrderWithDetails(newOrder, SessionManager.Cart);

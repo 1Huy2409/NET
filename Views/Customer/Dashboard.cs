@@ -1,5 +1,6 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
+using QLBS.DTOs.Book;
 using QLBS.Utils;
 using QLBS.Views.Customer.Buy;
 using QLBS.Views.Customer.History;
@@ -21,7 +22,7 @@ namespace QLBS.Views.Customer
     {
         public delegate void MyDel();
         public MyDel d { get; set; }
-        private List<Book> currentBooks = new List<Book>();
+        private List<BookDTO> currentBooks = new List<BookDTO>();
         public Dashboard(MyDel d)
         {
             this.d = d;
@@ -36,7 +37,7 @@ namespace QLBS.Views.Customer
             List<string> categoriesName = CategoryBLL.getInstance().getAllCateName();
             cbCategory.Items.AddRange(categoriesName.ToArray());
         }
-        private void LoadBooksToFlowPanel(List<Book> books)
+        private void LoadBooksToFlowPanel(List<BookDTO> books)
         {
 
             flowBooks.Controls.Clear();
@@ -90,7 +91,7 @@ namespace QLBS.Views.Customer
                 else
                 {
                     string name = cbCategory.SelectedItem.ToString();
-                    this.currentBooks = BookBLL.getInstance().getBooksByCategory(name);
+                    this.currentBooks = BookBLL.getInstance().getBookByCategoryName(name);
                     if (this.currentBooks.Count > 0)
                     {
                         LoadBooksToFlowPanel(this.currentBooks);

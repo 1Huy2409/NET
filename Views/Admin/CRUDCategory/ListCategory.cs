@@ -1,5 +1,6 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL.Entities;
+using QLBS.DTOs.Category;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,23 +10,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace QLBS.Views.Admin.CRUDCategory
 {
     public partial class ListCategory : Form
     {
+        private List<CategoryDTO> currentList = new List<CategoryDTO>();
         public ListCategory()
         {
             InitializeComponent();
-            LoadCategory();
+            Reload();
         }
-        private void LoadCategory()
+        private void LoadCategory(List<CategoryDTO> list)
         {
-            dgvCategory.DataSource = null;
-            dgvCategory.DataSource = CategoryBLL.getInstance().getAllCategories();
-            dgvCategory.Columns["CategoryId"].HeaderText = "Mã số";
-            dgvCategory.Columns["Name"].HeaderText = "Tên danh mục";
-            dgvCategory.Columns["Books"].Visible = false;
+            currentList = list;
+            dgvCategory.Columns.Clear();
+
+            // Thêm các cột với HeaderText ngay từ đầu
+            dgvCategory.Columns.Add("Id", "Mã số");
+            dgvCategory.Columns.Add("Name", "Tên danh mục");
+            dgvCategory.Columns.Add("Description", "Mô tả");
+
+            dgvCategory.Rows.Clear();
+            foreach (var category in list)
+            {
+                dgvCategory.Rows.Add(category.Id, category.Name);
+            }
+        }
+        private void Reload()
+        {
+            this.currentList = CategoryBLL.getInstance().getAllCategories();
+            LoadCategory(currentList);
         }
 
         private void dgvCategory_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -40,12 +56,22 @@ namespace QLBS.Views.Admin.CRUDCategory
                 MessageBox.Show("Vui lòng nhập danh mục bạn muốn thêm!");
                 return;
             }
-            Category newCategory = new Category();
-            newCategory.Name = txtAddName.Text;
-            CategoryBLL.getInstance().addCategory(newCategory);
-            MessageBox.Show("Thêm danh mục mới thành công!");
+            var categoryDTO = new CategoryCreateDTO
+            {
+                Name = txtAddName.Text.Trim()
+            };
+
+            if (CategoryBLL.getInstance().CreateCategory(categoryDTO))
+            {
+                MessageBox.Show("Thêm thể loại thành công!");
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Thêm thể loại thất bại! Có thể tên thể loại đã tồn tại.");
+            }
             // thực hiện reload
-            LoadCategory();
+            Reload();
         }
 
         private void btnDel_Click(object sender, EventArgs e)
@@ -59,10 +85,10 @@ namespace QLBS.Views.Admin.CRUDCategory
                     delCategories.Add(Convert.ToInt32(dgvCategory.SelectedCells[0].Value.ToString()));
                 }
                 // goi bll
-                CategoryBLL.getInstance().removeCategory(delCategories);
+                CategoryBLL.getInstance().DeleteCategories(delCategories);
                 BookBLL.getInstance().removeBookByCategory(delCategories);
                 // thuc hien reload
-                LoadCategory();
+                Reload();
             }
             else
             {
@@ -76,12 +102,23 @@ namespace QLBS.Views.Admin.CRUDCategory
             if (dgvCategory.SelectedRows.Count == 1)
             {
                 // thực hiện edit
-                Category newCategory = new Category();
-                newCategory.Name = txtEditName.Text;
                 int id = Convert.ToInt32(dgvCategory.SelectedCells[0].Value.ToString());
-                CategoryBLL.getInstance().editCategory(id, newCategory);
+                var newCategory = new CategoryUpdateDTO
+                {
+                    Id = id,
+                    Name = txtEditName.Text.Trim(),
+                };
+                if (CategoryBLL.getInstance().UpdateCategory(newCategory))
+                {
+                    MessageBox.Show("Edit thành công!");
+                }
+                else
+                {
+                    MessageBox.Show("Edit thất bại!");
+                }
+
                 // thuc hien reload
-                LoadCategory();
+                Reload();
             }
             else
             {
@@ -92,7 +129,7 @@ namespace QLBS.Views.Admin.CRUDCategory
 
         private void btnReload_Click(object sender, EventArgs e)
         {
-            LoadCategory();
+            Reload();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

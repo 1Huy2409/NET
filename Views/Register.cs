@@ -1,4 +1,5 @@
 ﻿using QLBS.BLL;
+using QLBS.DTOs.User;
 using QLBS.DAL;
 using QLBS.Utils;
 using System;
@@ -28,38 +29,21 @@ namespace QLBS.Views
         private void btnRegister_Click(object sender, EventArgs e)
         {
             // validate dữ liệu
-            var newUser = new User
+            var newUser = new UserRegisterDTO
             {
-                Name = txtFName.Text,
-                Email = txtEmail.Text,
                 UserName = txtUserName.Text,
                 Password = txtPassword.Text,
-                Address = txtAddress.Text,
+                Name = txtFName.Text,
+                Email = txtEmail.Text,
                 Phone = txtPhone.Text,
-                Role = "Customer"
+                Address = txtAddress.Text,  
             };
             // validate dữ liệu dựa vào data annotation trong domain class
             if (!ValidationHelper.Validate(newUser, this, errorProvider1))
             {
                 return;
             }
-            // check username trùng và email trùng
-            if (!AuthBLL.getInstance().IsEmailExist(newUser.Email))
-            {
-                errorProvider1.SetError(txtEmail, "Email đã được đăng ký");
-                MessageBox.Show("Email đã được đăng ký", "Lỗi đăng ký",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!AuthBLL.getInstance().IsUserNameExist(newUser.UserName))
-            {
-                errorProvider1.SetError(txtUserName, "Tên đăng nhập đã tồn tại");
-                MessageBox.Show("Tên đăng nhập đã tồn tại", "Lỗi đăng ký",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            bool checkRegister = AuthBLL.getInstance().Register(newUser);
+            bool checkRegister = UserBLL.getInstance().Register(newUser);
             if (checkRegister)
             {
                 MessageBox.Show("Đăng ký tài khoản thành công! Vui lòng đăng nhập");

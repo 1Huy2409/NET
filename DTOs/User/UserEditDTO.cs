@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 
 namespace QLBS.DTOs.User
 {
-    public class UserRegisterDTO
+    public class UserEditDTO
     {
+        public int Id { get; set; }
         [Required(ErrorMessage = "Tên đăng nhập không được để trống")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Tên đăng nhập phải từ 3-50 ký tự")]
         public string UserName { get; set; }
-        [Required(ErrorMessage = "Mật khẩu không được để trống")]
-        [StringLength(50, MinimumLength = 6, ErrorMessage = "Mật khẩu phải từ 6-50 ký tự")]
-        public string Password { get; set; }
         [Required(ErrorMessage = "Họ tên không được để trống")]
         [StringLength(100, ErrorMessage = "Họ tên không được quá 100 ký tự")]
         public string Name { get; set; }
@@ -24,7 +22,8 @@ namespace QLBS.DTOs.User
         [Required(ErrorMessage = "Số điện thoại là bắt buộc")]
         [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
         public string Phone { get; set; }
-        [Required(ErrorMessage = "Địa chỉ không được để trống")]
+        public string Password { get; set; }
+        [Required(ErrorMessage = "Địa chỉ là bắt buộc")]
         public string Address { get; set; }
     }
 }

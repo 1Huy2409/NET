@@ -10,14 +10,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using QLBS.DTOs.Book;
 
 namespace QLBS.Views.Customer.Buy
 {
     public partial class Confirm : Form
     {
         private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\";
-        private Book selectedBook { get; set; }
-        public Confirm(Book book)
+        private BookDTO selectedBook { get; set; }
+        public Confirm(BookDTO book)
         {
             this.selectedBook = book;
             InitializeComponent();
@@ -29,7 +30,7 @@ namespace QLBS.Views.Customer.Buy
             lbTitle.Text = selectedBook.Title;
             lbAuthor.Text = selectedBook.Author;
             lbPrice.Text = selectedBook.Price.ToString("N0") + "đ";
-            lbCategory.Text = selectedBook.Category.Name;
+            lbCategory.Text = selectedBook.CategoryName;
             string imagePath = Path.Combine(imageBasePath, selectedBook.ImageUrl);
             try
             {
@@ -73,7 +74,7 @@ namespace QLBS.Views.Customer.Buy
                 MessageBox.Show("Vui lòng nhập số lượng để thêm vào giỏ hàng!");
                 return;
             }
-            var existing = SessionManager.Cart.FirstOrDefault(c => c.Book.ID == selectedBook.ID);
+            var existing = SessionManager.Cart.FirstOrDefault(c => c.Book.Id == selectedBook.Id);
             int quantityAdd = (int)numBook.Value;
             int currentInCart = existing != null ? existing.Quantity : 0;
             int totalAfterAdd = currentInCart + quantityAdd; 

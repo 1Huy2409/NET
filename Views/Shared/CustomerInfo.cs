@@ -1,6 +1,7 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
 using QLBS.Utils;
+using QLBS.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -63,35 +64,22 @@ namespace QLBS.Views.Customer.Info
             if (isEdited)
             {
                 // thực hiện cập nhật cho customer này  
-                User user = new User
+                UserEditDTO user = new UserEditDTO
                 {
-                    ID = SessionManager.CurrentUser.ID,
+                    Id = SessionManager.CurrentUser.ID,
                     Name = txtFullName.Text,
                     Email = txtEmail.Text,
                     UserName = txtUserName.Text,
                     Phone = txtPhone.Text,
                     Address = txtAddress.Text,
-                    Password = SessionManager.CurrentUser.Password,
-                    Role = SessionManager.CurrentUser.Role
                 };
                 if (!ValidationHelper.Validate(user, this, errorProvider1))
                 {
                     return;
                 }    
-                if (!AuthBLL.getInstance().IsEmailExist(user.Email, SessionManager.CurrentUser.ID))
-                {
-                    MessageBox.Show("Email này đã tồn tại!");
-                    return;
-                }
-                if (!AuthBLL.getInstance().IsUserNameExist(user.UserName, SessionManager.CurrentUser.ID))
-                {
-                    MessageBox.Show("Tên người dùng này đã tồn tại!");
-                    return;
-                }
-                bool checkEdit = UserBLL.getInstance().updateUser(SessionManager.CurrentUser.ID, user);
+                bool checkEdit = UserBLL.getInstance().updateUser(user);
                 if (checkEdit)
                 {
-                    SessionManager.CurrentUser = user;
                     // update thanh cong
                     MessageBox.Show("Cập nhật thông tin thành công!");
                 }
@@ -148,7 +136,7 @@ namespace QLBS.Views.Customer.Info
                 return;
             }
             string newPassword = txtNewPw.Text.Trim();
-            bool checkUpdate = AuthBLL.getInstance().UpdatePassword(SessionManager.CurrentUser.UserName, newPassword);
+            bool checkUpdate = UserBLL.getInstance().UpdatePassword(SessionManager.CurrentUser.UserName, newPassword);
             if (checkUpdate)
             {
                 MessageBox.Show("Đổi mật khẩu thành công!");

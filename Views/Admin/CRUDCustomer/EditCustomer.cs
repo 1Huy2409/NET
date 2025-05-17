@@ -1,5 +1,6 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
+using QLBS.DTOs.User;
 using QLBS.Utils;
 using System;
 using System.Collections.Generic;
@@ -18,12 +19,12 @@ namespace QLBS.Views.Admin.CRUDCustomer
         public delegate void MyDel();
         public MyDel d { get; set; }
         private int id;
-        private User editCustomer;
+        private CustomerDTO editCustomer;
         public EditCustomer(int Id, MyDel d)
         {
             this.id = Id;
             this.d = d;
-            this.editCustomer = CustomerBLL.getInstance().getUserById(Id);
+            this.editCustomer = CustomerBLL.getInstance().GetCustomerById(this.id);
             InitializeComponent();
             LoadEdit();
         }
@@ -38,37 +39,20 @@ namespace QLBS.Views.Admin.CRUDCustomer
         private void btnOk_Click(object sender, EventArgs e)
         {
             // thực hiện logic
-            User newCustomer = new User
+            var newCustomer = new CustomerUpdateDTO
             {
-                Name = txtName.Text,
-                Email = txtEmail.Text,
-                UserName = txtUserName.Text,
-                Phone = txtPhone.Text,
-                Address = txtAddress.Text,
-                Password = this.editCustomer.Password,
-                Role = this.editCustomer.Role
+                Id = this.id,
+                UserName = txtUserName.Text.Trim(),
+                Name = txtName.Text.Trim(),
+                Email = txtEmail.Text.Trim(),
+                Phone = txtPhone.Text.Trim(),
+                Address = txtAddress.Text.Trim()
             };
             if (!ValidationHelper.Validate(newCustomer, this, errorProvider1))
             {
                 return;
             }
-            // check username trùng và email trùng
-            if (!AuthBLL.getInstance().IsEmailExist(newCustomer.Email, id))
-            {
-                errorProvider1.SetError(txtEmail, "Email đã được đăng ký");
-                MessageBox.Show("Email đã được đăng ký", "Lỗi đăng ký",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!AuthBLL.getInstance().IsUserNameExist(newCustomer.UserName, id))
-            {
-                errorProvider1.SetError(txtUserName, "Tên đăng nhập đã tồn tại");
-                MessageBox.Show("Tên đăng nhập đã tồn tại", "Lỗi đăng ký",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            bool checkEdit = CustomerBLL.getInstance().editUser(id, newCustomer);
+            bool checkEdit = CustomerBLL.getInstance().UpdateCustomer(newCustomer);
             if (checkEdit)
             {
                 MessageBox.Show("Edit thành công!");

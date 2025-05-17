@@ -1,4 +1,5 @@
 ﻿using QLBS.DAL;
+using QLBS.DTOs.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,22 +25,22 @@ namespace QLBS.BLL
             }
             return _instance;
         }
-        public void AddOrderDetail(OrderDetail orderDetail)
-        {
-            _context.OrderDetails.Add(orderDetail);
-            _context.SaveChanges();
-        }
-        public void RemoveOrderDetail(OrderDetail orderDetail)
-        {
-            _context.OrderDetails.Remove(orderDetail);
-            _context.SaveChanges();
-        }
-        public List<OrderDetail> GetOrderDetails(int orderId) 
+        public List<OrderDetailDTO> GetOrderDetails(int orderId) 
         {
             return _context.OrderDetails
-                        .Where(od => od.OrderId == orderId)
-                        .Include(od => od.Book)
-                        .ToList();
+            .Include(od => od.Book)
+            .Where(od => od.OrderId == orderId)
+            .Select(od => new OrderDetailDTO
+            {
+                Id = od.ID,
+                OrderId = od.OrderId,
+                BookId = od.BookId,
+                BookTitle = od.Book.Title,
+                Quantity = od.quantity,
+                Price = od.price,
+                Subtotal = od.quantity * od.price
+            })
+            .ToList();
         }
     }
 }

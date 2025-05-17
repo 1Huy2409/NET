@@ -74,7 +74,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BLL\AuthBLL.cs" />
     <Compile Include="BLL\BookBLL.cs" />
     <Compile Include="BLL\CategoryBLL.cs" />
     <Compile Include="BLL\CustomerBLL.cs" />
@@ -89,6 +88,25 @@
     </Compile>
     <Compile Include="DAL\Entities\CartItem.cs" />
     <Compile Include="DAL\Entities\Category.cs" />
+    <Compile Include="DTOs\Book\BookCreateDTO.cs" />
+    <Compile Include="DTOs\Book\BookDTO.cs" />
+    <Compile Include="DTOs\Book\BookUpdateDTO.cs" />
+    <Compile Include="DTOs\Cart\CartDTO.cs" />
+    <Compile Include="DTOs\Cart\CartItemDTO.cs" />
+    <Compile Include="DTOs\Category\CategoryCreateDTO.cs" />
+    <Compile Include="DTOs\Category\CategoryDTO.cs" />
+    <Compile Include="DTOs\Category\CategoryUpdateDTO.cs" />
+    <Compile Include="DTOs\Order\OrderCreateDTO.cs" />
+    <Compile Include="DTOs\Order\OrderDetailCreateDTO.cs" />
+    <Compile Include="DTOs\Order\OrderDetailDTO.cs" />
+    <Compile Include="DTOs\Order\OrderDTO.cs" />
+    <Compile Include="DTOs\User\CustomerCreateDTO.cs" />
+    <Compile Include="DTOs\User\CustomerDTO.cs" />
+    <Compile Include="DTOs\User\CustomerUpdateDTO.cs" />
+    <Compile Include="DTOs\User\UserDTO.cs" />
+    <Compile Include="DTOs\User\UserEditDTO.cs" />
+    <Compile Include="DTOs\User\UserLoginDTO.cs" />
+    <Compile Include="DTOs\User\UserRegisterDTO.cs" />
     <Compile Include="Migrations\202504281402389_UpdateIdentity.cs" />
     <Compile Include="Migrations\202504281402389_UpdateIdentity.designer.cs">
       <DependentUpon>202504281402389_UpdateIdentity.cs</DependentUpon>
@@ -109,6 +127,7 @@
     <Compile Include="Migrations\202505140725327_AddCategory.designer.cs">
       <DependentUpon>202505140725327_AddCategory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Mapper.cs" />
     <Compile Include="Utils\Validation.cs" />
     <Compile Include="Utils\ValidationHelper.cs" />
     <Compile Include="Views\Admin\CRUDBook\AddBook.cs">
@@ -122,18 +141,6 @@
     </Compile>
     <Compile Include="Views\Admin\CRUDBook\EditBook.Designer.cs">
       <DependentUpon>EditBook.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Admin\CRUDCategory\AddCategory.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\Admin\CRUDCategory\AddCategory.Designer.cs">
-      <DependentUpon>AddCategory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Admin\CRUDCategory\EditCategory.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\Admin\CRUDCategory\EditCategory.Designer.cs">
-      <DependentUpon>EditCategory.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Admin\CRUDCategory\ListCategory.cs">
       <SubType>Form</SubType>
@@ -262,9 +269,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Admin\CRUDBook\EditBook.resx">
       <DependentUpon>EditBook.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\Admin\CRUDCategory\AddCategory.resx">
-      <DependentUpon>AddCategory.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Admin\CRUDCategory\ListCategory.resx">
       <DependentUpon>ListCategory.cs</DependentUpon>

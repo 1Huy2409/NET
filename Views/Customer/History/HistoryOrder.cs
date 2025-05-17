@@ -1,5 +1,6 @@
-﻿    using QLBS.BLL;
+﻿using QLBS.BLL;
 using QLBS.DAL;
+using QLBS.DTOs.Order;
 using QLBS.Utils;
 using System;
 using System.Collections;
@@ -27,7 +28,7 @@ namespace QLBS.Views.Customer.History
         }
         private void LoadOrders()
         {
-            List<Order> list = OrderBLL.getInstance().GetOrdersByUserId(SessionManager.CurrentUser.ID);
+            List<OrderDTO> list = OrderBLL.getInstance().GetOrdersByUserId(SessionManager.CurrentUser.ID);
             dgvOrders.Columns.Clear();
             dgvOrders.Columns.Add("ID", "Mã Đơn");
             dgvOrders.Columns.Add("UserName", "Khách hàng");
@@ -36,7 +37,7 @@ namespace QLBS.Views.Customer.History
             dgvOrders.Rows.Clear();
             foreach (var order in list)
             {
-                dgvOrders.Rows.Add(order.ID, order.User.Name, order.OrderDate.ToString("dd/MM/yyyy"), order.TotalPrice.ToString("N0") + "đ");
+                dgvOrders.Rows.Add(order.Id, order.UserName, order.OrderDate.ToString("dd/MM/yyyy"), order.TotalAmount.ToString("N0") + "đ");
             }
         }
 
@@ -45,8 +46,8 @@ namespace QLBS.Views.Customer.History
             if (dgvOrders.CurrentRow != null)
             {
                 int orderId = Convert.ToInt32(dgvOrders.CurrentRow.Cells[0].Value);
-                var order = OrderBLL.getInstance().GetOrderById(orderId);
-                if (order != null)
+                var orderDetails = OrderDetailBLL.getInstance().GetOrderDetails(orderId);
+                if (orderDetails != null)
                 {
                     dgvOrderDetails.Columns.Clear();
                     dgvOrderDetails.Columns.Add("Title", "Tên sách");
@@ -54,17 +55,14 @@ namespace QLBS.Views.Customer.History
                     dgvOrderDetails.Columns.Add("quantity", "Số lượng");
                     dgvOrderDetails.Columns.Add("Tổng giá", "Tổng giá");
                     dgvOrderDetails.Rows.Clear();
-                    if (order.OrderDetails.Count > 0)
+                    foreach (var detail in orderDetails)
                     {
-                        foreach (var detail in order.OrderDetails)
-                        {
-                            dgvOrderDetails.Rows.Add(
-                                detail.Book.Title,
-                                detail.price.ToString("N0"),
-                                detail.quantity,
-                                (detail.price * detail.quantity).ToString("N0")
-                            );
-                        }
+                        dgvOrderDetails.Rows.Add(
+                            detail.BookTitle,
+                            detail.Price.ToString("N0"),
+                            detail.Quantity,
+                            detail.Subtotal.ToString("N0")
+                        );
                     }
                 }
             }

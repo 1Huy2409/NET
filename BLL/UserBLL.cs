@@ -31,7 +31,17 @@ namespace QLBS.BLL
         // service cho login
         public UserDTO Login(UserLoginDTO loginDTO)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserName == loginDTO.UserName && u.Password == loginDTO.Password);
+            var user = _context.Users.FirstOrDefault(u => u.UserName == loginDTO.UserName);
+            if (user == null)
+            {
+                return null;
+            }
+            bool isValidPassword = PasswordUtils.getInstance().VerifyPassword(loginDTO.Password, user.Password);
+            if (!isValidPassword)
+            {
+                return null;
+            }
+            SessionManager.CurrentUser = user;
             return user != null ? Mapper.ToDTO(user) : null;
         }
         // service cho register
@@ -40,11 +50,13 @@ namespace QLBS.BLL
             // kiểm tra xem email đã tồn tại hay chưa
             if (_context.Users.Any(u => u.Email == registerDTO.Email))
             {
+                MessageBox.Show("Email này đã tồn tại!");
                 return false;
             }
             // kiểm tra xem username đã tồn tại hay chưa
             if (_context.Users.Any(u => u.UserName == registerDTO.UserName))
             {
+                MessageBox.Show("Tên người dùng này đã tồn tại!");
                 return false;
             }
             var user = new User
@@ -61,9 +73,24 @@ namespace QLBS.BLL
             _context.SaveChanges();
             return true;
         }
-        public bool updateUser(int id, User user)
+        public bool updateUser(UserEditDTO user)
         {
-            var findUser = _context.Users.Find(id);
+            if (_context.Users.Any(u => u.Email == user.Email && u.ID != user.Id))
+            {
+                MessageBox.Show("Email này đã tồn tại!");
+                return false;
+            }
+            if (_context.Users.Any(u => u.UserName == user.UserName && u.ID != user.Id))
+            {
+                MessageBox.Show("Username này đã tồn tại!");
+                return false;
+            }
+            if (_context.Users.Any(u => u.Phone == user.Phone && u.ID != user.Id))
+            {
+                MessageBox.Show("Số điện thoại này đã tồn tại!");
+                return false;
+            }
+            var findUser = _context.Users.Find(user.Id);
             if (findUser != null) {
                 findUser.Address = user.Address;
                 findUser.Name = user.Name;
@@ -77,6 +104,20 @@ namespace QLBS.BLL
                 return false;
             }
             SessionManager.CurrentUser = findUser;
+            return true;
+        }
+        public bool UpdatePassword(string username, string newPassword)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserName == username);
+            if (user == null)
+            {
+                // ko tìm thấy user
+                return false;
+            }
+            string newHashedPassword = PasswordUtils.getInstance().HashPassword(newPassword);
+            user.Password = newHashedPassword;
+            SessionManager.CurrentUser = user;
+            _context.SaveChanges();
             return true;
         }
     }

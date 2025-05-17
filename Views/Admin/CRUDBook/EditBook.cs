@@ -1,6 +1,7 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
 using QLBS.Utils;
+using QLBS.DTOs.Book;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace QLBS.Views.Admin.CRUDBook
 {
@@ -17,55 +19,51 @@ namespace QLBS.Views.Admin.CRUDBook
     {
         public delegate void MyDel();
         public MyDel d { get; set; }
-        private Book editBook;
+        private BookDTO editBook;
         private int id;
         public EditBook(int Id, MyDel d)
         {
             this.id = Id;
             this.d = d;
             InitializeComponent();
-            editBook = BookBLL.getInstance().getBookById(Id);
+            editBook = BookBLL.getInstance().GetBookById(this.id);
             LoadCategory();
-            LoadEditForm(editBook);
+            LoadEditForm();
         }
         private void LoadCategory()
         {
             cbCategory.DataSource = CategoryBLL.getInstance().getAllCategories();
-            cbCategory.ValueMember = "CategoryId";
+            cbCategory.ValueMember = "Id";
             cbCategory.DisplayMember = "Name";
         }
-        private void LoadEditForm(Book book)
+        private void LoadEditForm()
         {
-            txtAuthor.Text = book.Author;
-            txtTitle.Text = book.Title;
-            cbCategory.SelectedValue = book.CategoryId;
-            txtPrice.Text = book.Price.ToString();
-            txtStock.Text = book.Stock.ToString();
-            txtUrl.Text = book.ImageUrl.ToString();
+            txtAuthor.Text = editBook.Author;
+            txtTitle.Text = editBook.Title;
+            cbCategory.SelectedValue = editBook.CategoryId;
+            txtPrice.Text = editBook.Price.ToString();
+            txtStock.Text = editBook.Stock.ToString();
+            txtUrl.Text = editBook.ImageUrl.ToString();
         }
 
         private void btnOk_Click(object sender, EventArgs e)
         {
             // truyền book mới kèm id của nó
-            Book editBook = new Book
+            var editBook = new BookUpdateDTO
             {
-                Title = txtTitle.Text,
-                Author = txtAuthor.Text,
-                CategoryId = (int)cbCategory.SelectedValue,
+                Id = this.id,
+                Title = txtTitle.Text.Trim(),
+                Author = txtAuthor.Text.Trim(),
                 Price = Convert.ToDecimal(txtPrice.Text),
                 Stock = Convert.ToInt32(txtStock.Text),
-                ImageUrl = txtUrl.Text
+                CategoryId = (int)cbCategory.SelectedValue,
+                ImageUrl = txtUrl.Text.Trim()
             };
             if (!ValidationHelper.Validate(editBook, this, errorProvider1))
             {
                 return;
             }
-            if (!BookBLL.getInstance().IsBookTitleExist(editBook.Title, id))
-            {
-                MessageBox.Show("Tên sách này đã tồn tại!");
-                return;
-            }
-            bool checkEdit = BookBLL.getInstance().editBook(id, editBook);
+            bool checkEdit = BookBLL.getInstance().UpdateBook(editBook);
             if (checkEdit)
             {
                 MessageBox.Show("Edit thành công");

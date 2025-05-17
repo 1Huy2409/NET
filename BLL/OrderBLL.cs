@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using QLBS.DTOs.Order;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using QLBS.DAL;
 using System.Data.Entity;
+using QLBS.Views.Customer.Buy;
 
 
 namespace QLBS.BLL
@@ -25,60 +27,100 @@ namespace QLBS.BLL
             }
             return _instance;
         }
-        public void AddOrderWithDetails(Order order, List<CartItem> Cart)
+        public bool AddOrderWithDetails(OrderCreateDTO orderDTO, List<CartItem> Cart)
         {
-            order.OrderDetails = new List<OrderDetail>();   
-
-            foreach (CartItem item in Cart)
+            if (!_context.Users.Any(u => u.ID == orderDTO.UserId))
             {
-                Console.WriteLine(item.Book.Title.ToString());
-                if (item.Quantity > item.Book.Stock)
-                {
-                    MessageBox.Show("Không đủ hàng tồn kho!");
-                    return;
-                }
-                OrderDetail detail = new OrderDetail
-                {
-                    BookId = item.Book.ID,
-                    quantity = item.Quantity,
-                    price = item.Book.Price,
-                    OrderId = order.ID
-                };
-                // tru ton kho
-                Book bookInDB = _context.Books.Find(item.Book.ID);
-                bookInDB.Stock -= item.Quantity;
-                order.OrderDetails.Add(detail);
+                return false;
             }
+
+            // Tạo đơn hàng mới
+            var order = new Order
+            {
+                UserId = orderDTO.UserId,
+                OrderDate = orderDTO.OrderDate,
+                TotalPrice = orderDTO.TotalAmount
+            };
+
             _context.Orders.Add(order);
+            _context.SaveChanges(); // Lưu để lấy OrderId
+
+            // Thêm chi tiết đơn hàng
+            foreach (var item in Cart)
+            {
+                // Kiểm tra tồn kho
+                var book = _context.Books.Find(item.Book.Id);
+                if (book == null || item.Quantity > book.Stock)
+                {
+                    return false;
+                }
+
+                // Tạo chi tiết đơn hàng
+                var orderDetail = new OrderDetail
+                {
+                    OrderId = order.ID,
+                    BookId = item.Book.Id,
+                    quantity = item.Quantity,
+                    price = book.Price
+                };
+
+                // Cập nhật số lượng tồn kho
+                book.Stock -= item.Quantity;
+
+                _context.OrderDetails.Add(orderDetail);
+            }
+
             _context.SaveChanges();
+            return true;
         }
-        public List<Order> GetOrdersByUserId(int userId) 
+        public List<OrderDTO> GetOrdersByUserId(int userId) 
         {
             return _context.Orders
                         .Where(o => o.UserId == userId)
                         .Include(o => o.User)
-                        .ToList();
+                        .Select(o => new OrderDTO
+                        {
+                            Id = o.ID,
+                            UserId = o.UserId,
+                            UserName = o.User.Name,
+                            OrderDate = o.OrderDate,
+                            TotalAmount = o.TotalPrice
+                        })
+                            .ToList();
         }
-        public List<Order> GetAllOrders()
-        {
-                return _context.Orders
-                              .Include(o => o.User)
-                              .Include(o => o.OrderDetails.Select(od => od.Book))
-                              .ToList();
-        }
-        public Order GetOrderById(int id)
-        {
-            return _context.Orders
-                           .Where(o => o.ID == id)
-                           .Include(o => o.User)
-                           .Include(o => o.OrderDetails.Select(od => od.Book)).FirstOrDefault();
-        }
-        public List<Order> GetOrderByUserName(string name)
+        public List<OrderDTO> GetAllOrders()
         {
             return _context.Orders
-                           .Where(o => o.User.Name.ToLower().Contains(name))
-                           .Include(o => o.User)
-                           .Include(o => o.OrderDetails.Select(od => od.Book)).ToList();
+                            .Include(o => o.User)
+                            .Select(o => new OrderDTO
+                            {
+                                Id = o.ID,
+                                UserId = o.UserId,
+                                UserName = o.User.Name,
+                                OrderDate = o.OrderDate,
+                                TotalAmount = o.TotalPrice
+                            })
+                            .ToList();
+        }
+        public List<OrderDTO> GetOrderByUserName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return GetAllOrders();
+            }
+
+            return _context.Orders
+                .Include(o => o.User)
+                .Where(o => o.User.Name.ToLower().Contains(name.ToLower()))
+                .Select(o => new OrderDTO
+                {
+                    Id = o.ID,
+                    UserId = o.UserId,
+                    UserName = o.User.Name,
+                    OrderDate = o.OrderDate,
+                    TotalAmount = o.TotalPrice
+                })
+                .ToList();
         }
     }
 }

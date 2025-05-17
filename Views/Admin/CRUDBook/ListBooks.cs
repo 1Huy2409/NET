@@ -1,5 +1,6 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
+using QLBS.DTOs.Book;
 using QLBS.Views.Admin.CRUDBook;
 using System;
 using System.Collections.Generic;
@@ -16,15 +17,15 @@ namespace QLBS.Views.Admin
     public partial class ListBooks : Form
     {
         private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\";
-        private List<Book> defaultBooks = new List<Book>();
-        private List<Book> currentBooks = new List<Book>();
+        private List<BookDTO> defaultBooks = new List<BookDTO>();
+        private List<BookDTO> currentBooks = new List<BookDTO>();
         public ListBooks()
         {
             InitializeComponent();
             ConfigureDataGridView();
-            defaultBooks = BookBLL.getInstance().getAllBooks();
             LoadCategory();
-            LoadBooks(defaultBooks);
+            dgvBooks.CellFormatting += DgvBooks_CellFormatting;
+            Reload();
         }
 
         private void ConfigureDataGridView()
@@ -39,17 +40,18 @@ namespace QLBS.Views.Admin
             List<string> categoriesName = CategoryBLL.getInstance().getAllCateName();
             cbCategory.Items.AddRange(categoriesName.ToArray());
         }
-        private void LoadBooks(List<Book> books)
+        private void LoadBooks(List<BookDTO> books)
         {
                
             currentBooks = books;
-            dgvBooks.DataSource = BookBLL.getInstance().getDisplayBook(books);
+            dgvBooks.DataSource = null;
+            dgvBooks.DataSource = books;
 
             // Đặt tên cột
-            dgvBooks.Columns["ID"].HeaderText = "ID";
+            dgvBooks.Columns["Id"].HeaderText = "ID";
             dgvBooks.Columns["Title"].HeaderText = "Tên sách";
             dgvBooks.Columns["Author"].HeaderText = "Tác giả";
-            dgvBooks.Columns["Category"].HeaderText = "Danh mục";
+            dgvBooks.Columns["CategoryName"].HeaderText = "Danh mục";
             dgvBooks.Columns["Price"].HeaderText = "Giá tiền";
             dgvBooks.Columns["Stock"].HeaderText = "Số lượng";
 
@@ -64,9 +66,7 @@ namespace QLBS.Views.Admin
                 imageColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
                 dgvBooks.Columns.Add(imageColumn);
             }
-
-            // Xử lý sự kiện CellFormatting để load ảnh
-            dgvBooks.CellFormatting += DgvBooks_CellFormatting;
+            dgvBooks.Columns["BookImage"].DisplayIndex = dgvBooks.Columns.Count - 1;
         }
         public void Reload()
         {
@@ -158,11 +158,11 @@ namespace QLBS.Views.Admin
             {
                 for (int i = 0; i < dgvBooks.SelectedRows.Count; i++)
                 {
-                    delBooks.Add(Convert.ToInt32(dgvBooks.SelectedRows[i].Cells["ID"].Value));
+                    delBooks.Add(Convert.ToInt32(dgvBooks.SelectedRows[i].Cells["Id"].Value));
                 }
             }
             // truyền list ID cần xóa này vào BookBLL 
-            BookBLL.getInstance().removeBook(delBooks);
+            BookBLL.getInstance().DeleteBooks(delBooks);
             Reload();
         }
 
@@ -170,10 +170,10 @@ namespace QLBS.Views.Admin
         {
             if (dgvBooks.SelectedRows.Count == 1)
             {
-                Console.WriteLine("ID là: " + dgvBooks.SelectedRows[0].Cells["ID"].Value.ToString());
+                Console.WriteLine("ID là: " + dgvBooks.SelectedRows[0].Cells["Id"].Value.ToString());
 
                 // thuc hien edit
-                EditBook editForm = new EditBook(Convert.ToInt32(dgvBooks.SelectedRows[0].Cells["ID"].Value), Reload);
+                EditBook editForm = new EditBook(Convert.ToInt32(dgvBooks.SelectedRows[0].Cells["Id"].Value), Reload);
                 editForm.Show();
             }
         }
@@ -181,21 +181,14 @@ namespace QLBS.Views.Admin
         private void btnSearch_Click(object sender, EventArgs e)
         {
             string keyword = txtSearch.Text.Trim().ToLower();
-            List<Book> books = BookBLL.getInstance().getBookByTitle(keyword);
-            if (books.Count > 0)
-            {
-                LoadBooks(books);
-            }    
-            else
-            {
-                MessageBox.Show("Không tìm thấy sản phẩm với tên này!");
-            }
+            var searchResults = BookBLL.getInstance().SearchBooks(keyword);
+            LoadBooks(searchResults);
         }
 
         private void cbSort_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selected = cbSort.SelectedItem.ToString();
-            List<Book> sortedBook = currentBooks;
+            List<BookDTO> sortedBook = currentBooks;
             switch (selected)
             {
                 case "Tiêu đề tăng dần":
@@ -228,14 +221,14 @@ namespace QLBS.Views.Admin
                 else
                 {
                     string name = cbCategory.SelectedItem.ToString();
-                    List<Book> booksByCategory = BookBLL.getInstance().getBooksByCategory(name);
+                    List<BookDTO> booksByCategory = BookBLL.getInstance().GetBooksByCategory(name);
                     if (booksByCategory.Count > 0)
                     {
                         LoadBooks(booksByCategory);
                     }
                     else
                     {
-                        MessageBox.Show("Không tồn tại sản phẩm thuộc danh mục này!");
+                        LoadBooks(defaultBooks);
                     }
                 }
             }

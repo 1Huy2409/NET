@@ -56,5 +56,4 @@ D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Migrations.book.resources
 D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Views.Admin.CRUDOrder.ListOrder.resources
 D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Migrations.ChangeAnnotationBook.resources
 D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Migrations.AddCategory.resources
-D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Views.Admin.CRUDCategory.AddCategory.resources
 D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Views.Admin.CRUDCategory.ListCategory.resources

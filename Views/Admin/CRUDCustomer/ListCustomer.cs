@@ -1,5 +1,6 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
+using QLBS.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,24 +15,22 @@ namespace QLBS.Views.Admin.CRUDCustomer
 {
     public partial class ListCustomer : Form
     {
-        private List<User> defaultCustomer = new List<User> ();
-        private List<User> currentCustomer = new List<User> ();
+        private List<CustomerDTO> defaultCustomer = new List<CustomerDTO> ();
+        private List<CustomerDTO> currentCustomer = new List<CustomerDTO>();
         public ListCustomer()
         {
             InitializeComponent();
-            defaultCustomer = CustomerBLL.getInstance().getAllCustomers();
             Reload();
         }
-        public void LoadCustomers(List<User> users)
+        public void LoadCustomers(List<CustomerDTO> customers)
         {
-            currentCustomer = users;
+            currentCustomer = customers;
             dgvCustomers.DataSource = null;
-            dgvCustomers.DataSource = users;
-
-            dgvCustomers.Columns["Password"].Visible = false;
+            dgvCustomers.DataSource = customers;
         }
         public void Reload()
         {
+            defaultCustomer = CustomerBLL.getInstance().getAllCustomers();
             this.LoadCustomers(defaultCustomer);
         }
         private void btnAdd_Click(object sender, EventArgs e)
@@ -64,8 +63,20 @@ namespace QLBS.Views.Admin.CRUDCustomer
                     delUserIds.Add(Convert.ToInt32(dgvCustomers.SelectedRows[i].Cells[0].Value));
                 }
                 // goi bll
-                CustomerBLL.getInstance().removeCustomer(delUserIds);
+                if (CustomerBLL.getInstance().DeleteCustomers(delUserIds))
+                {
+                    MessageBox.Show("Xóa thành công!");
+                }
+                else
+                {
+                    MessageBox.Show("Xóa thất bại");
+                }
                 Reload();
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng chọn ít nhất 1 khách hàng để xóa!");
+                return;
             }
         }
 
@@ -77,7 +88,7 @@ namespace QLBS.Views.Admin.CRUDCustomer
         private void cbSort_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selected = cbSort.SelectedItem.ToString();
-            List<User> sortedCustomer = currentCustomer;
+            List<CustomerDTO> sortedCustomer = currentCustomer;
             switch (selected)
             {
                 case "Tên tăng dần":
@@ -94,9 +105,8 @@ namespace QLBS.Views.Admin.CRUDCustomer
         private void btnSearch_Click(object sender, EventArgs e)
         {
             string keyword = txtSearch.Text.Trim().ToLower();
-            List<User> listCustomer = CustomerBLL.getInstance().getCustomerByName(keyword);
-            LoadCustomers(listCustomer);
-
+            var searchResults = CustomerBLL.getInstance().SearchCustomers(keyword);
+            LoadCustomers(searchResults);
         }
     }
 }

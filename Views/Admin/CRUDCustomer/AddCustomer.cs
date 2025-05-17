@@ -10,6 +10,7 @@ using QLBS.DAL;
 using System.Windows.Forms;
 using QLBS.BLL;
 using QLBS.Utils;
+using QLBS.DTOs.User;
 
 namespace QLBS.Views.Admin.CRUDCustomer
 {
@@ -25,14 +26,13 @@ namespace QLBS.Views.Admin.CRUDCustomer
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            User newCustomer = new User
+            var newCustomer = new CustomerCreateDTO
             {
                 Name = txtName.Text,
                 Email = txtEmail.Text,
                 UserName = txtUserName.Text,
                 Password = txtPassword.Text,
                 Address = txtAddress.Text,
-                Role = "Customer",
                 Phone = txtPhone.Text,
             };
             // validate new user
@@ -40,23 +40,14 @@ namespace QLBS.Views.Admin.CRUDCustomer
             {
                 return;
             }
-            // check username trùng và email trùng
-            if (!AuthBLL.getInstance().IsEmailExist(newCustomer.Email))
+            if (CustomerBLL.getInstance().CreateCustomer(newCustomer))
             {
-                errorProvider1.SetError(txtEmail, "Email đã được đăng ký");
-                MessageBox.Show("Email đã được đăng ký", "Lỗi đăng ký",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                MessageBox.Show("Thêm khách hàng thành công!");
             }
-
-            if (!AuthBLL.getInstance().IsUserNameExist(newCustomer.UserName))
+            else
             {
-                errorProvider1.SetError(txtUserName, "Tên đăng nhập đã tồn tại");
-                MessageBox.Show("Tên đăng nhập đã tồn tại", "Lỗi đăng ký",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            CustomerBLL.getInstance().addCustomer(newCustomer);
+                MessageBox.Show("Thêm khách hàng thất bại!");
+            }    
             d();
             this.Close();
         }

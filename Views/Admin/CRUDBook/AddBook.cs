@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using QLBS.BLL;
 using QLBS.DAL;
+using QLBS.DTOs.Book;
 using QLBS.Utils;
 using QLBS.Views.Admin.CRUDBook;
 
@@ -28,7 +29,7 @@ namespace QLBS.Views.Admin
         {
             cbCategory.DataSource = CategoryBLL.getInstance().getAllCategories();
             cbCategory.SelectedIndex = -1;
-            cbCategory.ValueMember = "CategoryId";
+            cbCategory.ValueMember = "Id";
             cbCategory.DisplayMember = "Name";
         }
         private void btnCancel_Click(object sender, EventArgs e)
@@ -51,30 +52,31 @@ namespace QLBS.Views.Admin
                 return;
             }
 
-            Book newBook = new Book
+            var newBook = new BookCreateDTO
             {
-                Title = txtTitle.Text,
-                Author = txtAuthor.Text,
-                CategoryId = (int)cbCategory.SelectedValue,
+                Title = txtTitle.Text.Trim(),
+                Author = txtAuthor.Text.Trim(),
                 Price = price,
                 Stock = stock,
-                ImageUrl = txtUrl.Text,
+                CategoryId = (int)cbCategory.SelectedValue,
+                ImageUrl = txtUrl.Text.Trim()
             };
 
             // Validate object sau khi chắc chắn không lỗi định dạng
             if (!ValidationHelper.Validate(newBook, this, errorProvider1))
             {
-                Console.WriteLine("Đã vào validate.");
                 return;
             }
 
-            if (!BookBLL.getInstance().IsBookTitleExist(newBook.Title))
+            if (BookBLL.getInstance().CreateBook(newBook))
             {
-                MessageBox.Show("Tên sách này đã tồn tại!");
-                return;
+                MessageBox.Show("Thêm sách thành công!");
             }
-
-            BookBLL.getInstance().addBook(newBook);
+            else
+            {
+                MessageBox.Show("Thêm sách thất bại!");
+            } 
+                
             d(); // Hàm callback để reload
             this.Close();
         }

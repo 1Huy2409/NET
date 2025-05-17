@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace QLBS.DTOs.Category
 {
-    public class CategoryCreateDTO
+    public class CategoryUpdateDTO
     {
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "Vui lòng nhập tên thể loại")]
         [StringLength(50, ErrorMessage = "Tên thể loại không được quá 50 ký tự")]
         public string Name { get; set; }
