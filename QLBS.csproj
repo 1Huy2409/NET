@@ -86,18 +86,15 @@
     <Compile Include="BookCard.Designer.cs">
       <DependentUpon>BookCard.cs</DependentUpon>
     </Compile>
-    <Compile Include="DAL\Entities\CartItem.cs" />
+    <Compile Include="DAL\CartItem.cs" />
     <Compile Include="DAL\Entities\Category.cs" />
     <Compile Include="DTOs\Book\BookCreateDTO.cs" />
     <Compile Include="DTOs\Book\BookDTO.cs" />
     <Compile Include="DTOs\Book\BookUpdateDTO.cs" />
-    <Compile Include="DTOs\Cart\CartDTO.cs" />
-    <Compile Include="DTOs\Cart\CartItemDTO.cs" />
     <Compile Include="DTOs\Category\CategoryCreateDTO.cs" />
     <Compile Include="DTOs\Category\CategoryDTO.cs" />
     <Compile Include="DTOs\Category\CategoryUpdateDTO.cs" />
     <Compile Include="DTOs\Order\OrderCreateDTO.cs" />
-    <Compile Include="DTOs\Order\OrderDetailCreateDTO.cs" />
     <Compile Include="DTOs\Order\OrderDetailDTO.cs" />
     <Compile Include="DTOs\Order\OrderDTO.cs" />
     <Compile Include="DTOs\User\CustomerCreateDTO.cs" />
@@ -127,8 +124,7 @@
     <Compile Include="Migrations\202505140725327_AddCategory.designer.cs">
       <DependentUpon>202505140725327_AddCategory.cs</DependentUpon>
     </Compile>
-    <Compile Include="Utils\Mapper.cs" />
-    <Compile Include="Utils\Validation.cs" />
+    <Compile Include="Utils\ImageHelper.cs" />
     <Compile Include="Utils\ValidationHelper.cs" />
     <Compile Include="Views\Admin\CRUDBook\AddBook.cs">
       <SubType>Form</SubType>
@@ -371,6 +367,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Pictures\anh9.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Pictures\bitter.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Pictures\haha.jpg" />
+    <Content Include="Pictures\letter.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -27,7 +27,6 @@ namespace QLBS.Views.Admin.CRUDCategory
             currentList = list;
             dgvCategory.Columns.Clear();
 
-            // Thêm các cột với HeaderText ngay từ đầu
             dgvCategory.Columns.Add("Id", "Mã số");
             dgvCategory.Columns.Add("Name", "Tên danh mục");
             dgvCategory.Columns.Add("Description", "Mô tả");
@@ -64,7 +63,6 @@ namespace QLBS.Views.Admin.CRUDCategory
             if (CategoryBLL.getInstance().CreateCategory(categoryDTO))
             {
                 MessageBox.Show("Thêm thể loại thành công!");
-                this.Close();
             }
             else
             {

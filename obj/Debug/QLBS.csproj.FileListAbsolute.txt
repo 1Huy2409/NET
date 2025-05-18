@@ -57,3 +57,5 @@ D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Views.Admin.CRUDOrder.ListOrder.resourc
 D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Migrations.ChangeAnnotationBook.resources
 D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Migrations.AddCategory.resources
 D:\HuyCoding\Winform\QLBS\obj\Debug\QLBS.Views.Admin.CRUDCategory.ListCategory.resources
+D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\letter.jpg
+D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\bitter.jpg

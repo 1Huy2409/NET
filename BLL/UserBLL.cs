@@ -31,18 +31,29 @@ namespace QLBS.BLL
         // service cho login
         public UserDTO Login(UserLoginDTO loginDTO)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserName == loginDTO.UserName);
+            var user = _context.Users.FirstOrDefault(u => u.UserName == loginDTO.UserName); // lấy phần tử đầu tiên
             if (user == null)
             {
+                MessageBox.Show("Không tìm thấy username này!");
                 return null;
             }
             bool isValidPassword = PasswordUtils.getInstance().VerifyPassword(loginDTO.Password, user.Password);
             if (!isValidPassword)
             {
+                MessageBox.Show("Mật khẩu sai!");
                 return null;
             }
             SessionManager.CurrentUser = user;
-            return user != null ? Mapper.ToDTO(user) : null;
+            return new UserDTO
+            {
+                Id = user.ID,
+                UserName = user.UserName,
+                Name = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                Address = user.Address,
+                Role = user.Role,
+            };
         }
         // service cho register
         public bool Register(UserRegisterDTO registerDTO)

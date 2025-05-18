@@ -20,6 +20,7 @@ namespace QLBS.Views.Customer.Buy
         }
         private void LoadCart()
         {
+            dgvCart.Columns.Clear();
             dgvCart.Columns.Add("Title", "Tên sách");
             dgvCart.Columns.Add("Price", "Đơn giá");
             dgvCart.Columns.Add("Quantity", "Số lượng");

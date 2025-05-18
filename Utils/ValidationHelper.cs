@@ -23,10 +23,24 @@ namespace QLBS.Utils
             if (!isValid)
             {
                 // Hiển thị tất cả lỗi trong MessageBox
-                string errorMessages = string.Join("\n", validationResults.Select(r => r.ErrorMessage));
+                string errorMessages = string.Join("\n", validationResults.Select(r => r.ErrorMessage)); 
                 MessageBox.Show(errorMessages, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return isValid;
+        }
+        public static bool ValidateLogin(string username, string password)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                MessageBox.Show("Vui lòng nhập UserName!");
+                return false;
+            }
+            if (string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Vui lòng nhập Password!");
+                return false;
+            }
+            return true;
         }
     }
 }

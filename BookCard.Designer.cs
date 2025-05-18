@@ -39,9 +39,9 @@
             // imgBook
             // 
             this.imgBook.Location = new System.Drawing.Point(26, 0);
-            this.imgBook.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.imgBook.Margin = new System.Windows.Forms.Padding(2);
             this.imgBook.Name = "imgBook";
-            this.imgBook.Size = new System.Drawing.Size(146, 154);
+            this.imgBook.Size = new System.Drawing.Size(146, 170);
             this.imgBook.TabIndex = 0;
             this.imgBook.TabStop = false;
             // 
@@ -74,8 +74,8 @@
             // 
             // btnAddCart
             // 
-            this.btnAddCart.Location = new System.Drawing.Point(89, 254);
-            this.btnAddCart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnAddCart.Location = new System.Drawing.Point(89, 238);
+            this.btnAddCart.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddCart.Name = "btnAddCart";
             this.btnAddCart.Size = new System.Drawing.Size(83, 27);
             this.btnAddCart.TabIndex = 5;
@@ -92,7 +92,7 @@
             this.Controls.Add(this.lbAuthor);
             this.Controls.Add(this.lbTitle);
             this.Controls.Add(this.imgBook);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "BookCard";
             this.Size = new System.Drawing.Size(202, 283);
             ((System.ComponentModel.ISupportInitialize)(this.imgBook)).EndInit();

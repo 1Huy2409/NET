@@ -38,7 +38,7 @@ namespace QLBS.Views
         private void btnLogin_Click(object sender, EventArgs e)
         {
             // validate dữ liệu
-            if (!Validation.ValidateLogin(txtUserName.Text, txtPassword.Text))
+            if (!ValidationHelper.ValidateLogin(txtUserName.Text, txtPassword.Text))
             {
                 return;
             }

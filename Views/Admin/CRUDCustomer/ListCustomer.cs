@@ -15,7 +15,7 @@ namespace QLBS.Views.Admin.CRUDCustomer
 {
     public partial class ListCustomer : Form
     {
-        private List<CustomerDTO> defaultCustomer = new List<CustomerDTO> ();
+        private List<CustomerDTO> defaultCustomer = new List<CustomerDTO>();
         private List<CustomerDTO> currentCustomer = new List<CustomerDTO>();
         public ListCustomer()
         {

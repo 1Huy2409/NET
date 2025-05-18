@@ -1,6 +1,7 @@
 ﻿using QLBS.BLL;
 using QLBS.DAL;
 using QLBS.DTOs.Book;
+using QLBS.Utils;
 using QLBS.Views.Admin.CRUDBook;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,9 @@ namespace QLBS.Views.Admin
 {
     public partial class ListBooks : Form
     {
-        private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\";
+        //private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\";
+        private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\Pictures\";
+
         private List<BookDTO> defaultBooks = new List<BookDTO>();
         private List<BookDTO> currentBooks = new List<BookDTO>();
         public ListBooks()
@@ -30,7 +33,6 @@ namespace QLBS.Views.Admin
 
         private void ConfigureDataGridView()
         {
-            // Thiết lập chiều cao dòng để hiển thị ảnh
             dgvBooks.RowTemplate.Height = 100;
         }
 
@@ -95,7 +97,7 @@ namespace QLBS.Views.Admin
                             try
                             {
                                 Image img = Image.FromFile(fullPath);
-                                e.Value = ResizeImage(img, new Size(80, 100));
+                                e.Value = ImageHelper.GetInstance().ResizeImage(img, new Size(80, 100));
                             }
                             catch
                             {
@@ -121,24 +123,18 @@ namespace QLBS.Views.Admin
             {
                 if (decimal.TryParse(e.Value.ToString(), out decimal price))
                 {
-                    // Format theo kiểu: 100.000 ₫
-                    e.Value = price.ToString("c0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
-                    e.FormattingApplied = true;
+                    e.Value = price.ToString("N0") + "đ";
+                    e.FormattingApplied = true; // đã áp dụng format rồi
                 }
             }
         }
 
 
-        private Image ResizeImage(Image imgToResize, Size size)
-        {
-            Bitmap b = new Bitmap(size.Width, size.Height);
-            using (Graphics g = Graphics.FromImage(b))
-            {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(imgToResize, 0, 0, size.Width, size.Height);
-            }
-            return b;
-        }
+        //private Image ResizeImage(Image imgToResize, Size size)
+        //{
+        //    var resized = new Bitmap(imgToResize, size);
+        //    return resized;
+        //}
 
         private void btnAdd_Click(object sender, EventArgs e)
         {

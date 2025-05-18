@@ -1,4 +1,5 @@
 ﻿using QLBS.DAL;
+using QLBS.Utils;
 using QLBS.Views.Customer.Buy;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,9 @@ namespace QLBS
 {
     public partial class BookCard : UserControl
     {
-        private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\";
+        //private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\";
+        private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\Pictures\";
+
         public BookDTO book { get; set; }
         public BookCard()
         {
@@ -36,7 +39,8 @@ namespace QLBS
             {
                 if (!string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath))
                 {
-                    imgBook.Image = Image.FromFile(imagePath);
+                    Image img = Image.FromFile(imagePath);
+                    imgBook.Image = ImageHelper.GetInstance().ResizeImage(img, new Size(120, 140));
                 }
                 else
                 {

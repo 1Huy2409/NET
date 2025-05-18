@@ -16,7 +16,7 @@ namespace QLBS.Views.Customer.Buy
 {
     public partial class Confirm : Form
     {
-        private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\";
+        private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\Pictures\";
         private BookDTO selectedBook { get; set; }
         public Confirm(BookDTO book)
         {
@@ -36,7 +36,7 @@ namespace QLBS.Views.Customer.Buy
             {
                 if (!string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath))
                 {
-                    imgBook.Image = Image.FromFile(imagePath);
+                    imgBook.Image = ImageHelper.GetInstance().ResizeImage(Image.FromFile(imagePath), new Size(240, 348));
                 }
                 else
                 {
