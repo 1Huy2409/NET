@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace QLBS.Views.Admin
             InitializeComponent();
             this.d = d;
             LoadCategory();
+            txtUrl.ReadOnly = true;
         }
         private void LoadCategory()
         {
@@ -71,15 +73,47 @@ namespace QLBS.Views.Admin
             if (BookBLL.getInstance().CreateBook(newBook))
             {
                 MessageBox.Show("Thêm sách thành công!");
+                d();
+                this.Close();
             }
             else
             {
                 MessageBox.Show("Thêm sách thất bại!");
-            } 
-                
-            d(); // Hàm callback để reload
-            this.Close();
+            }
         }
 
+        private void btnChoose_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Image Files|*.jpg;*.jpeg;*.png";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string picturesDir = Path.Combine(Application.StartupPath, "Pictures");
+                    if (!Directory.Exists(picturesDir))
+                        Directory.CreateDirectory(picturesDir);
+
+                    string fileName = Path.GetFileName(ofd.FileName);
+                    string destPath = Path.Combine(picturesDir, fileName);
+
+                    // Nếu file nguồn và file đích là cùng một file thì không copy lại
+                    if (!string.Equals(ofd.FileName, destPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Nếu file đích đã tồn tại, đổi tên file mới
+                        if (!File.Exists(destPath))
+                        {
+                            File.Copy(ofd.FileName, destPath);
+                        }
+                    }
+
+                    // Lưu đường dẫn tương đối vào textbox
+                    string relativePath = $"Pictures/{fileName}";
+                    txtUrl.Text = relativePath;
+
+                    // Hiển thị ảnh preview
+                    prevPicture.Image = ImageHelper.GetInstance().ResizeImage(Image.FromFile(destPath), new Size(100, 120));
+                }
+            }
+        }
     }
 }

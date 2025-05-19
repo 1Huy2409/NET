@@ -80,7 +80,7 @@ namespace QLBS.Views.Admin.CRUDCategory
                 List<int> delCategories = new List<int>();
                 for (int i = 0; i <  dgvCategory.SelectedRows.Count; i++)
                 {
-                    delCategories.Add(Convert.ToInt32(dgvCategory.SelectedCells[0].Value.ToString()));
+                    delCategories.Add(Convert.ToInt32(dgvCategory.SelectedCells[0].Value));
                 }
                 // goi bll
                 CategoryBLL.getInstance().DeleteCategories(delCategories);
@@ -100,7 +100,7 @@ namespace QLBS.Views.Admin.CRUDCategory
             if (dgvCategory.SelectedRows.Count == 1)
             {
                 // thực hiện edit
-                int id = Convert.ToInt32(dgvCategory.SelectedCells[0].Value.ToString());
+                int id = Convert.ToInt32(dgvCategory.SelectedCells[0].Value);
                 var newCategory = new CategoryUpdateDTO
                 {
                     Id = id,
@@ -139,7 +139,7 @@ namespace QLBS.Views.Admin.CRUDCategory
         {
             if (dgvCategory.CurrentRow != null)
             {
-                int id = Convert.ToInt32(dgvCategory.CurrentRow.Cells[0].Value.ToString());
+                int id = Convert.ToInt32(dgvCategory.CurrentRow.Cells[0].Value);
                 string name = dgvCategory.CurrentRow.Cells[1].Value.ToString();
                 txtEditName.Text = name;
                 txtID.Text = id.ToString();

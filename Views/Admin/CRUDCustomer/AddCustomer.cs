@@ -43,13 +43,14 @@ namespace QLBS.Views.Admin.CRUDCustomer
             if (CustomerBLL.getInstance().CreateCustomer(newCustomer))
             {
                 MessageBox.Show("Thêm khách hàng thành công!");
+                d();
+                this.Close();
             }
             else
             {
                 MessageBox.Show("Thêm khách hàng thất bại!");
+                return;
             }    
-            d();
-            this.Close();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

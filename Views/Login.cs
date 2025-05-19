@@ -19,11 +19,11 @@ namespace QLBS.Views
     {
         public Login()
         {
-            SessionManager.CurrentUser = null;
             InitializeComponent();
         }
-        public void ResetField()
+        public void Reset()
         {
+            SessionManager.CurrentUser = null;
             txtUserName.Text = "";
             txtPassword.Text = "";
         }
@@ -42,7 +42,6 @@ namespace QLBS.Views
             {
                 return;
             }
-            // lấy value từ user name và password đưa vào bll authcontroller để kiểm tra
             var userLogin = new UserLoginDTO
             {
                 UserName = txtUserName.Text,
@@ -52,17 +51,17 @@ namespace QLBS.Views
             if (user!=null)
             {
                 // chuyen sang form khac
-                if (SessionManager.CurrentUser.Role == "Admin")
+                if (user.Role == "Admin")
                 {
                     this.Hide();
-                    Admin.Dashboard dashboard = new Admin.Dashboard(ResetField);
+                    Admin.Dashboard dashboard = new Admin.Dashboard(Reset);
                     dashboard.ShowDialog();
                     this.Show();
                 }
-                if (SessionManager.CurrentUser.Role == "Customer")
+                if (user.Role == "Customer")
                 {
                     this.Hide();
-                    Customer.Dashboard dashboard = new Customer.Dashboard(ResetField);
+                    Customer.Dashboard dashboard = new Customer.Dashboard(Reset);
                     dashboard.ShowDialog();
                     this.Show();
                 }

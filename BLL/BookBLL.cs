@@ -13,7 +13,7 @@ namespace QLBS.BLL
 {
     public class BookBLL
     {
-        private QLBSDbContext _context;
+        private readonly BookDAL _bookDAL;
         private static BookBLL _instance;
         public static BookBLL getInstance()
         {
@@ -25,12 +25,12 @@ namespace QLBS.BLL
         }
         public BookBLL()
         {
-            _context = new QLBSDbContext();
+            _bookDAL = new BookDAL();
         }
         // begin after dto
         public List<BookDTO> getAllBooks()
         {
-            var books = _context.Books.Include(b => b.Category).ToList();
+            var books = _bookDAL.GetAllBooks();
             return books.Select(b => new BookDTO
             {
                 Id = b.ID,
@@ -45,11 +45,9 @@ namespace QLBS.BLL
         }
         public BookDTO GetBookById(int id)
         {
-            var book = _context.Books.Find(id);
-            if (book == null)
-            {
-                return null;
-            }
+            var book = _bookDAL.GetBookById(id);
+            if (book == null) return null;
+
             return new BookDTO
             {
                 Id = book.ID,
@@ -60,15 +58,10 @@ namespace QLBS.BLL
                 CategoryId = book.CategoryId,
                 CategoryName = book.Category.Name,
                 ImageUrl = book.ImageUrl
-            };        
+            };
         }
         public bool CreateBook(BookCreateDTO bookDTO)
         {
-            if (_context.Books.Any(b => b.Title == bookDTO.Title))
-            {
-                MessageBox.Show("Tên sách này đã tồn tại!");
-                return false;
-            }
             var book = new Book
             {
                 Title = bookDTO.Title,
@@ -79,99 +72,40 @@ namespace QLBS.BLL
                 ImageUrl = bookDTO.ImageUrl
             };
 
-            _context.Books.Add(book);
-            _context.SaveChanges();
+            if (!_bookDAL.AddBook(book))
+            {
+                MessageBox.Show("Tên sách này đã tồn tại!");
+                return false;
+            }
             return true;
         }
         public bool UpdateBook(BookUpdateDTO bookDTO)
         {
-            var book = _context.Books.Find(bookDTO.Id);
-            if (book == null)
-            {
-                return false;
-            }
-            if (_context.Books.Any(b => b.Title == bookDTO.Title && b.ID != bookDTO.Id))
-            {
-                MessageBox.Show("Tên danh mục đã tồn tại!");
-                return false;
-            }
+            var book = _bookDAL.GetBookById(bookDTO.Id);
+            if (book == null) return false;
+
             book.Title = bookDTO.Title;
             book.Author = bookDTO.Author;
             book.Price = bookDTO.Price;
             book.Stock = bookDTO.Stock;
             book.CategoryId = bookDTO.CategoryId;
             book.ImageUrl = bookDTO.ImageUrl;
-            _context.SaveChanges();
+
+            if (!_bookDAL.UpdateBook(book))
+            {
+                MessageBox.Show("Tên sách đã tồn tại!");
+                return false;
+            }
             return true;
         }
         public bool DeleteBooks(List<int> delBooks)
         {
-            for (int i = 0; i < delBooks.Count; i++)
-            {
-                int id = delBooks[i];
-                var delBook = _context.Books.Find(id);
-                if (delBook != null)
-                {
-                    _context.Books.Remove(delBook);
-                    _context.SaveChanges();
-                }
-            }
-            return true;
+            return _bookDAL.DeleteBooks(delBooks);
         }
         public List<BookDTO> SearchBooks(string keyword)
         {
-            if (string.IsNullOrEmpty(keyword))
-            {
-                return getAllBooks();
-            }
-
-            keyword = keyword.ToLower();
-            return _context.Books
-                .Include(b => b.Category)
-                .Where(b => b.Title.ToLower().Contains(keyword) ||
-                           b.Author.ToLower().Contains(keyword) ||
-                           b.Category.Name.ToLower().Contains(keyword))
-                .Select(b => new BookDTO
-                {
-                    Id = b.ID,
-                    Title = b.Title,
-                    Author = b.Author,
-                    Price = b.Price,
-                    Stock = b.Stock,
-                    CategoryId = b.CategoryId,
-                    CategoryName = b.Category.Name,
-                    ImageUrl = b.ImageUrl
-                })
-                .ToList();
-        }
-        public List<BookDTO> getBookByCategoryName(string categoryName)
-        {
-            if (string.IsNullOrEmpty(categoryName))
-            {
-                return getAllBooks();
-            }
-
-            return _context.Books
-                .Include(b => b.Category)
-                .Where(b => b.Category.Name.ToLower() == categoryName.ToLower())
-                .Select(b => new BookDTO
-                {
-                    Id = b.ID,
-                    Title = b.Title,
-                    Author = b.Author,
-                    Price = b.Price,
-                    Stock = b.Stock,
-                    CategoryId = b.CategoryId,
-                    CategoryName = b.Category.Name,
-                    ImageUrl = b.ImageUrl
-                })
-                .ToList();
-        }
-        public List<BookDTO> GetBooksByCategory(string name) 
-        { 
-            var listBooks = _context.Books
-                           .Where(b => b.Category.Name == name).ToList();
-            return listBooks.Select(b => new BookDTO
+            var books = _bookDAL.SearchBooks(keyword);
+            return books.Select(b => new BookDTO
             {
                 Id = b.ID,
                 Title = b.Title,
@@ -183,19 +117,26 @@ namespace QLBS.BLL
                 ImageUrl = b.ImageUrl
             }).ToList();
         }
+        public List<BookDTO> getBookByCategoryName(string categoryName)
+        {
+            var books = _bookDAL.GetBooksByCategory(categoryName);
+            return books.Select(b => new BookDTO
+            {
+                Id = b.ID,
+                Title = b.Title,
+                Author = b.Author,
+                Price = b.Price,
+                Stock = b.Stock,
+                CategoryId = b.CategoryId,
+                CategoryName = b.Category.Name,
+                ImageUrl = b.ImageUrl
+            }).ToList();
+        }
+      
         //
         public void removeBookByCategory(List<int> delCategories)
         {
-            for (int i = 0; i < delCategories.Count;i++)
-            {
-                int id = delCategories[i];
-                var delBook = _context.Books.Where(b => b.CategoryId == id).FirstOrDefault();
-                if (delBook != null)
-                {
-                    _context.Books.Remove(delBook);
-                    _context.SaveChanges();
-                }
-            }    
+            _bookDAL.RemoveBooksByCategory(delCategories);
         }
         // edit book
     }

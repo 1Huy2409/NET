@@ -12,7 +12,7 @@ namespace QLBS.BLL
 {
     public class CustomerBLL
     {
-        private QLBSDbContext _context;
+        private readonly UserDAL _userDAL;
         private static CustomerBLL _instance;
         public static CustomerBLL getInstance()
         {
@@ -24,12 +24,12 @@ namespace QLBS.BLL
         }
         public CustomerBLL()
         {
-            _context = new QLBSDbContext();
+            _userDAL = new UserDAL();
         }
         // after DTOs
         public List<CustomerDTO> getAllCustomers()
         {
-            var customers = _context.Users.Where(u => u.Role == "Customer").ToList();
+            var customers = _userDAL.SearchUsers("");
             return customers.Select(c => new CustomerDTO
             {
                 Id = c.ID,
@@ -42,10 +42,8 @@ namespace QLBS.BLL
         }
         public CustomerDTO GetCustomerById(int id)
         {
-            var customer = _context.Users
-                .FirstOrDefault(u => u.ID == id && u.Role == "Customer");
-
-            if (customer == null) return null;
+            var customer = _userDAL.GetUserById(id);
+            if (customer == null || customer.Role != "Customer") return null;
 
             return new CustomerDTO
             {
@@ -57,102 +55,62 @@ namespace QLBS.BLL
                 Address = customer.Address
             };
         }
-        public bool CreateCustomer(CustomerCreateDTO customer)
+        public bool CreateCustomer(CustomerCreateDTO customerDTO)
         {
-            // kiểm tra username và email đã tồn tại hay chưa
-            if (_context.Users.Any(u => u.Email == customer.Email))
+            var user = new User
             {
-                MessageBox.Show("Email này đã tồn tại!");
-                return false;   
-            }
-            if (_context.Users.Any(u => u.UserName == customer.UserName))
-            {
-                MessageBox.Show("Tên người dùng này đã tồn tại!");
-                return false;
-            }
-            User user = new User
-            {
-                UserName = customer.UserName,
-                Password = PasswordUtils.getInstance().HashPassword(customer.Password),
-                Email = customer.Email,
-                Phone = customer.Phone,
-                Address = customer.Address,
-                Name = customer.Name,
+                UserName = customerDTO.UserName,
+                Password = PasswordUtils.getInstance().HashPassword(customerDTO.Password),
+                Email = customerDTO.Email,
+                Phone = customerDTO.Phone,
+                Address = customerDTO.Address,
+                Name = customerDTO.Name,
                 Role = "Customer"
             };
-            _context.Users.Add(user);
-            _context.SaveChanges();
+
+            if (!_userDAL.AddUser(user))
+            {
+                return false;
+            }
             return true;
         }
-        public bool UpdateCustomer(CustomerUpdateDTO customer)
+        public bool UpdateCustomer(CustomerUpdateDTO customerDTO)
         {
-            var findCustomer = _context.Users.Find(customer.Id); // tìm customer cần update
-            if (findCustomer == null || findCustomer.Role != "Customer")
+            var customer = _userDAL.GetUserById(customerDTO.Id);
+            if (customer == null || customer.Role != "Customer")
             {
-                MessageBox.Show("Không tìm thấy người dùng!");
+                MessageBox.Show("Không tìm thấy khách hàng!");
                 return false;
             }
-            if (_context.Users.Any(u => u.Email == customer.Email && u.ID != customer.Id))
+
+            customer.Name = customerDTO.Name;
+            customer.Email = customerDTO.Email;
+            customer.Phone = customerDTO.Phone;
+            customer.Address = customerDTO.Address;
+            customer.UserName = customerDTO.UserName;
+
+            if (!_userDAL.UpdateUser(customer))
             {
-                MessageBox.Show("Email này đã tồn tại!");
                 return false;
             }
-            if (_context.Users.Any(u => u.UserName == customer.UserName && u.ID != customer.Id))
-            {
-                MessageBox.Show("Tên người dùng này đã tồn tại!");
-                return false;
-            }
-            findCustomer.Name = customer.Name;
-            findCustomer.Email = customer.Email;
-            findCustomer.Phone = customer.Phone;
-            findCustomer.Address = customer.Address;
-            findCustomer.UserName = customer.UserName;
-            _context.SaveChanges();
             return true;
         }
         public bool DeleteCustomers(List<int> delCustomerIds)
         {
-            for (int i = 0; i < delCustomerIds.Count; i++)
-            { 
-                int id = delCustomerIds[i];
-                User delCustomer = _context.Users.Find(id);
-                if (delCustomer != null)
-                {
-                    _context.Users.Remove(delCustomer);
-                    _context.SaveChanges();
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            return true;
+            return _userDAL.DeleteUsers(delCustomerIds);
         }
         public List<CustomerDTO> SearchCustomers(string keyword)
         {
-            if (string.IsNullOrEmpty(keyword))
+            var customers = _userDAL.SearchUsers(keyword);
+            return customers.Select(c => new CustomerDTO
             {
-                return getAllCustomers();
-            }
-
-            keyword = keyword.ToLower();
-            return _context.Users
-                .Where(u => u.Role == "Customer" && (
-                    u.Name.ToLower().Contains(keyword) ||
-                    u.Email.ToLower().Contains(keyword) ||
-                    u.Phone.Contains(keyword) ||
-                    u.Address.ToLower().Contains(keyword)
-                ))
-                .Select(u => new CustomerDTO
-                {
-                    Id = u.ID,
-                    UserName = u.UserName,
-                    Name = u.Name,
-                    Email = u.Email,
-                    Phone = u.Phone,
-                    Address = u.Address
-                })
-                .ToList();
+                Id = c.ID,
+                UserName = c.UserName,
+                Name = c.Name,
+                Email = c.Email,
+                Phone = c.Phone,
+                Address = c.Address
+            }).ToList();
         }
         // end after DTOs
     }

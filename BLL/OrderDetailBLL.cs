@@ -11,10 +11,10 @@ namespace QLBS.BLL
 {
     public class OrderDetailBLL
     {
-        private QLBSDbContext _context;
+        private readonly OrderDetailDAL _orderDetailDAL;
         public OrderDetailBLL()
         {
-            _context = new QLBSDbContext();
+            _orderDetailDAL = new OrderDetailDAL();
         }
         private static OrderDetailBLL _instance;
         public static OrderDetailBLL getInstance()
@@ -27,10 +27,8 @@ namespace QLBS.BLL
         }
         public List<OrderDetailDTO> GetOrderDetails(int orderId) 
         {
-            return _context.OrderDetails
-            .Include(od => od.Book)
-            .Where(od => od.OrderId == orderId)
-            .Select(od => new OrderDetailDTO
+            var orderDetails = _orderDetailDAL.GetOrderDetails(orderId);
+            return orderDetails.Select(od => new OrderDetailDTO
             {
                 Id = od.ID,
                 OrderId = od.OrderId,
@@ -39,8 +37,7 @@ namespace QLBS.BLL
                 Quantity = od.quantity,
                 Price = od.price,
                 Subtotal = od.quantity * od.price
-            })
-            .ToList();
+            }).ToList();
         }
     }
 }

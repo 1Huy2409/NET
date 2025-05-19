@@ -34,16 +34,28 @@ namespace QLBS
             lbTitle.Text = book.Title;
             lbAuthor.Text = "Tác giả: " + book.Author;
             lbPrice.Text = "Giá: " + book.Price.ToString("N0") + "đ";
-            string imagePath = Path.Combine(imageBasePath, book.ImageUrl);
+
+            string imagePath = Path.Combine(System.Windows.Forms.Application.StartupPath, book.ImageUrl);
+
             try
             {
-                if (!string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath))
+                // Giải phóng ảnh cũ nếu có
+                if (imgBook.Image != null)
                 {
-                    Image img = Image.FromFile(imagePath);
-                    imgBook.Image = ImageHelper.GetInstance().ResizeImage(img, new Size(120, 140));
+                    imgBook.Image.Dispose();
+                    imgBook.Image = null;
+                }
+
+                if (!string.IsNullOrEmpty(book.ImageUrl) && System.IO.File.Exists(imagePath))
+                {
+                    using (var img = Image.FromFile(imagePath))
+                    {
+                        imgBook.Image = ImageHelper.GetInstance().ResizeImage(img, new Size(120, 140));
+                    }
                 }
                 else
                 {
+                    // Ảnh mặc định nếu không có ảnh
                     imgBook.Image = null;
                 }
             }

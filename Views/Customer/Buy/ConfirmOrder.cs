@@ -85,6 +85,11 @@ namespace QLBS.Views.Customer.Buy
                     }
                 }
             }
+            else
+            {
+                MessageBox.Show("Vui lòng chọn ít nhất 1 sản phẩm để xóa!");
+            } 
+                
         }
     }
 }

@@ -86,8 +86,13 @@
     <Compile Include="BookCard.Designer.cs">
       <DependentUpon>BookCard.cs</DependentUpon>
     </Compile>
+    <Compile Include="DAL\BookDAL.cs" />
     <Compile Include="DAL\CartItem.cs" />
+    <Compile Include="DAL\CategoryDAL.cs" />
     <Compile Include="DAL\Entities\Category.cs" />
+    <Compile Include="DAL\OrderDAL.cs" />
+    <Compile Include="DAL\OrderDetailDAL.cs" />
+    <Compile Include="DAL\UserDAL.cs" />
     <Compile Include="DTOs\Book\BookCreateDTO.cs" />
     <Compile Include="DTOs\Book\BookDTO.cs" />
     <Compile Include="DTOs\Book\BookUpdateDTO.cs" />

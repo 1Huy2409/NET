@@ -45,7 +45,10 @@
             this.label7 = new System.Windows.Forms.Label();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.cbCategory = new System.Windows.Forms.ComboBox();
+            this.prevPicture = new System.Windows.Forms.PictureBox();
+            this.btnChoose = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.prevPicture)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -185,10 +188,30 @@
             this.cbCategory.Size = new System.Drawing.Size(256, 21);
             this.cbCategory.TabIndex = 15;
             // 
+            // prevPicture
+            // 
+            this.prevPicture.Location = new System.Drawing.Point(564, 85);
+            this.prevPicture.Name = "prevPicture";
+            this.prevPicture.Size = new System.Drawing.Size(147, 196);
+            this.prevPicture.TabIndex = 16;
+            this.prevPicture.TabStop = false;
+            // 
+            // btnChoose
+            // 
+            this.btnChoose.Location = new System.Drawing.Point(603, 293);
+            this.btnChoose.Name = "btnChoose";
+            this.btnChoose.Size = new System.Drawing.Size(75, 23);
+            this.btnChoose.TabIndex = 17;
+            this.btnChoose.Text = "Chọn ảnh";
+            this.btnChoose.UseVisualStyleBackColor = true;
+            this.btnChoose.Click += new System.EventHandler(this.btnChoose_Click);
+            // 
             // AddBook
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnChoose);
+            this.Controls.Add(this.prevPicture);
             this.Controls.Add(this.cbCategory);
             this.Controls.Add(this.txtUrl);
             this.Controls.Add(this.label7);
@@ -207,6 +230,7 @@
             this.Name = "AddBook";
             this.Text = "AddBook";
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.prevPicture)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -230,5 +254,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.ComboBox cbCategory;
+        private System.Windows.Forms.PictureBox prevPicture;
+        private System.Windows.Forms.Button btnChoose;
     }
 }

@@ -1,4 +1,5 @@
-﻿using QLBS.DAL.Entities;
+﻿using QLBS.DAL;
+using QLBS.DAL.Entities;
 using QLBS.DTOs.Category;
 using System;
 using System.Collections.Generic;
@@ -12,11 +13,11 @@ namespace QLBS.BLL
 {
     public class CategoryBLL
     {
-        private QLBSDbContext _context;
+        private readonly CategoryDAL _categoryDAL;
         private static CategoryBLL _instance;
         public CategoryBLL()
         {
-            _context = new QLBSDbContext();
+            _categoryDAL = new CategoryDAL();
         }
         public static CategoryBLL getInstance()
         {
@@ -29,71 +30,49 @@ namespace QLBS.BLL
         // method get all categories
         public List<CategoryDTO> getAllCategories()
         {
-            return _context.Categories
-            .Select(c => new CategoryDTO
+            var categories = _categoryDAL.GetAllCategories();
+            return categories.Select(c => new CategoryDTO
             {
                 Id = c.CategoryId,
                 Name = c.Name
-            })
-            .ToList();
+            }).ToList();
         }
         // get by id
-        public CategoryDTO GetCategoryById(int id)
-        {
-            return _context.Categories
-                .Where(c => c.CategoryId == id)
-                .Select(c => new CategoryDTO
-                {
-                    Id = c.CategoryId,
-                    Name = c.Name
-                })
-                .FirstOrDefault();
-        }
         public bool CreateCategory(CategoryCreateDTO categoryDTO)
         {
-            if (_context.Categories.Any(c => c.Name == categoryDTO.Name))
-            {
-                MessageBox.Show("Tên danh mục đã tồn tại!");
-                return false;
-            }
             var category = new Category
             {
                 Name = categoryDTO.Name
             };
 
-            _context.Categories.Add(category);
-            _context.SaveChanges();
-            return true;
-        }
-        public bool UpdateCategory(CategoryUpdateDTO categoryDTO)
-        {
-            var category = _context.Categories.Find(categoryDTO.Id);
-            if (_context.Categories.Any(c => c.Name == categoryDTO.Name && c.CategoryId != categoryDTO.Id))
+            if (!_categoryDAL.AddCategory(category))
             {
                 MessageBox.Show("Tên danh mục đã tồn tại!");
                 return false;
             }
+            return true;
+        }
+        public bool UpdateCategory(CategoryUpdateDTO categoryDTO)
+        {
+            var category = _categoryDAL.GetCategoryById(categoryDTO.Id);
+            if (category == null) return false;
+
             category.Name = categoryDTO.Name;
-            _context.SaveChanges();
+
+            if (!_categoryDAL.UpdateCategory(category))
+            {
+                MessageBox.Show("Tên danh mục đã tồn tại!");
+                return false;
+            }
             return true;
         }
         public bool DeleteCategories(List<int> delCategories)
         {
-            for (int i = 0; i < delCategories.Count; i++)
-            {
-                int id = delCategories[i];
-                var delCategory = _context.Categories.Where(cate => cate.CategoryId == id).FirstOrDefault();
-                if (delCategory != null)
-                {
-                    _context.Categories.Remove(delCategory);
-                    _context.SaveChanges();
-                }
-            }
-            return true;
+            return _categoryDAL.DeleteCategories(delCategories);
         }
         public List<string> getAllCateName()
         {
-            return _context.Categories.Select(c => c.Name).ToList();
+            return _categoryDAL.GetAllCategoryNames();
         }
         // end
     }

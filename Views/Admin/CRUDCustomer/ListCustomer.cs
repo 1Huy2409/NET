@@ -104,7 +104,7 @@ namespace QLBS.Views.Admin.CRUDCustomer
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            string keyword = txtSearch.Text.Trim().ToLower();
+            string keyword = txtSearch.Text.Trim();
             var searchResults = CustomerBLL.getInstance().SearchCustomers(keyword);
             LoadCustomers(searchResults);
         }

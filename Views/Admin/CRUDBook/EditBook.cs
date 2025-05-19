@@ -12,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using QLBS.Migrations;
+using System.IO;
 
 namespace QLBS.Views.Admin.CRUDBook
 {
@@ -44,6 +46,12 @@ namespace QLBS.Views.Admin.CRUDBook
             txtPrice.Text = editBook.Price.ToString();
             txtStock.Text = editBook.Stock.ToString();
             txtUrl.Text = editBook.ImageUrl.ToString();
+            txtUrl.ReadOnly = true;
+            string imagePath = Path.Combine(Application.StartupPath, editBook.ImageUrl.ToString());
+            if (File.Exists(imagePath))
+                prevPicture.Image = ImageHelper.GetInstance().ResizeImage(Image.FromFile(imagePath), new Size (100, 120));
+            else
+                prevPicture.Image = null;
         }
 
         private void btnOk_Click(object sender, EventArgs e)
@@ -67,18 +75,44 @@ namespace QLBS.Views.Admin.CRUDBook
             if (checkEdit)
             {
                 MessageBox.Show("Edit thành công");
+                d();
                 this.Close();
             }
             else
             {
                 MessageBox.Show("Edit thất bại");
             }
-            d();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void btnChoose_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string picturesDir = Path.Combine(Application.StartupPath, "Pictures");
+                    if (!Directory.Exists(picturesDir))
+                        Directory.CreateDirectory(picturesDir);
+
+                    string fileName = Path.GetFileName(ofd.FileName);
+                    string destPath = Path.Combine(picturesDir, fileName);
+
+                    if (!File.Exists(destPath))
+                    {
+                        File.Copy(ofd.FileName, destPath);
+                    }
+
+                    string relativePath = $"Pictures/{fileName}";
+                    txtUrl.Text = relativePath;
+                    prevPicture.Image = ImageHelper.GetInstance().ResizeImage(Image.FromFile(destPath), new Size(100, 120));
+                }
+            }
         }
     }
 }

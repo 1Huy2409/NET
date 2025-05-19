@@ -39,6 +39,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.btnConfirm = new System.Windows.Forms.Button();
             this.lbCategory = new System.Windows.Forms.Label();
+            this.lbStock = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.imgBook)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numBook)).BeginInit();
             this.SuspendLayout();
@@ -138,16 +139,28 @@
             // lbCategory
             // 
             this.lbCategory.AutoSize = true;
+            this.lbCategory.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbCategory.Location = new System.Drawing.Point(379, 80);
             this.lbCategory.Name = "lbCategory";
-            this.lbCategory.Size = new System.Drawing.Size(29, 13);
+            this.lbCategory.Size = new System.Drawing.Size(38, 18);
             this.lbCategory.TabIndex = 10;
             this.lbCategory.Text = "label";
+            // 
+            // lbStock
+            // 
+            this.lbStock.AutoSize = true;
+            this.lbStock.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbStock.Location = new System.Drawing.Point(644, 297);
+            this.lbStock.Name = "lbStock";
+            this.lbStock.Size = new System.Drawing.Size(39, 18);
+            this.lbStock.TabIndex = 11;
+            this.lbStock.Text = "Kho:";
             // 
             // Confirm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(866, 494);
+            this.Controls.Add(this.lbStock);
             this.Controls.Add(this.lbCategory);
             this.Controls.Add(this.btnConfirm);
             this.Controls.Add(this.button1);
@@ -181,5 +194,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnConfirm;
         private System.Windows.Forms.Label lbCategory;
+        private System.Windows.Forms.Label lbStock;
     }
 }

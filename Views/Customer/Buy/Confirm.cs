@@ -16,7 +16,6 @@ namespace QLBS.Views.Customer.Buy
 {
     public partial class Confirm : Form
     {
-        private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\Pictures\";
         private BookDTO selectedBook { get; set; }
         public Confirm(BookDTO book)
         {
@@ -31,7 +30,8 @@ namespace QLBS.Views.Customer.Buy
             lbAuthor.Text = selectedBook.Author;
             lbPrice.Text = selectedBook.Price.ToString("N0") + "đ";
             lbCategory.Text = selectedBook.CategoryName;
-            string imagePath = Path.Combine(imageBasePath, selectedBook.ImageUrl);
+            lbStock.Text = "Tồn kho: " + selectedBook.Stock.ToString();
+            string imagePath = Path.Combine(System.Windows.Forms.Application.StartupPath, selectedBook.ImageUrl);
             try
             {
                 if (!string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath))
@@ -50,7 +50,7 @@ namespace QLBS.Views.Customer.Buy
         }
         private void RenderTotal()
         {
-            decimal total = selectedBook.Price * numBook.Value;
+            decimal total = selectedBook.Price * (int)numBook.Value;
             lbAmount.Text = total.ToString("N0") + "đ";
         }
 

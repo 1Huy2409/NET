@@ -17,9 +17,6 @@ namespace QLBS.Views.Admin
 {
     public partial class ListBooks : Form
     {
-        //private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\bin\Debug\Pictures\";
-        private string imageBasePath = @"D:\HuyCoding\Winform\QLBS\Pictures\";
-
         private List<BookDTO> defaultBooks = new List<BookDTO>();
         private List<BookDTO> currentBooks = new List<BookDTO>();
         public ListBooks()
@@ -84,29 +81,15 @@ namespace QLBS.Views.Admin
                 e.RowIndex >= 0 &&
                 dgvBooks.Columns.Contains("ImageUrl"))
             {
-                var cellValue = dgvBooks.Rows[e.RowIndex].Cells["ImageUrl"].Value;
-
-                if (cellValue != null)
+                var imageUrl = dgvBooks.Rows[e.RowIndex].Cells["ImageUrl"].Value.ToString();
+                if (!string.IsNullOrEmpty(imageUrl))
                 {
-                    string imageName = cellValue.ToString();
-                    if (!string.IsNullOrEmpty(imageName))
+                    string imagePath = Path.Combine(Application.StartupPath, imageUrl);
+                    if (File.Exists(imagePath))
                     {
-                        string fullPath = Path.Combine(imageBasePath, imageName);
-                        if (File.Exists(fullPath))
+                        using (var img = Image.FromFile(imagePath))
                         {
-                            try
-                            {
-                                Image img = Image.FromFile(fullPath);
-                                e.Value = ImageHelper.GetInstance().ResizeImage(img, new Size(80, 100));
-                            }
-                            catch
-                            {
-                                e.Value = null; // hoặc ảnh mặc định
-                            }
-                        }
-                        else
-                        {
-                            e.Value = null;
+                            e.Value = new Bitmap(img, new Size(80, 100));
                         }
                     }
                     else
@@ -217,7 +200,7 @@ namespace QLBS.Views.Admin
                 else
                 {
                     string name = cbCategory.SelectedItem.ToString();
-                    List<BookDTO> booksByCategory = BookBLL.getInstance().GetBooksByCategory(name);
+                    List<BookDTO> booksByCategory = BookBLL.getInstance().getBookByCategoryName(name);
                     if (booksByCategory.Count > 0)
                     {
                         LoadBooks(booksByCategory);

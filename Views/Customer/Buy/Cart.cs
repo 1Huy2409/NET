@@ -41,7 +41,6 @@ namespace QLBS.Views.Customer.Buy
 
         private void btnOrder_Click(object sender, EventArgs e)
         {
-            // open form xác nhận địa chỉ ,... rồi order
             ConfirmOrder confirmOrder = new ConfirmOrder();
             confirmOrder.Show();
             this.Close();

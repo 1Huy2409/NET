@@ -23,9 +23,7 @@ namespace QLBS.Views.Admin
         {
             this.d = d;
             InitializeComponent();
-            lbUserName.Text = SessionManager.CurrentUser.UserName;
         }
-
         private void btnLogout_Click(object sender, EventArgs e)
         {
             d();
@@ -60,7 +58,6 @@ namespace QLBS.Views.Admin
         {
             CustomerInfo customerInfo = new CustomerInfo();
             customerInfo.Show();
-            lbUserName.Text = SessionManager.CurrentUser.UserName;
         }
     }
 }

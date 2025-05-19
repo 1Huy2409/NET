@@ -13,12 +13,12 @@ namespace QLBS.BLL
     public class UserBLL
     {
         // singleton pattern
-        private QLBSDbContext _context;
+        private readonly UserDAL _userDAL;
         private static UserBLL _instance;
 
         public UserBLL() 
         {
-            _context = new QLBSDbContext(); 
+            _userDAL = new UserDAL();
         }
         public static UserBLL getInstance()
         {
@@ -31,18 +31,20 @@ namespace QLBS.BLL
         // service cho login
         public UserDTO Login(UserLoginDTO loginDTO)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserName == loginDTO.UserName); // lấy phần tử đầu tiên
+            var user = _userDAL.GetUserByUsername(loginDTO.UserName);
             if (user == null)
             {
                 MessageBox.Show("Không tìm thấy username này!");
                 return null;
             }
+
             bool isValidPassword = PasswordUtils.getInstance().VerifyPassword(loginDTO.Password, user.Password);
             if (!isValidPassword)
             {
                 MessageBox.Show("Mật khẩu sai!");
                 return null;
             }
+
             SessionManager.CurrentUser = user;
             return new UserDTO
             {
@@ -52,24 +54,12 @@ namespace QLBS.BLL
                 Email = user.Email,
                 Phone = user.Phone,
                 Address = user.Address,
-                Role = user.Role,
+                Role = user.Role
             };
         }
         // service cho register
         public bool Register(UserRegisterDTO registerDTO)
         {
-            // kiểm tra xem email đã tồn tại hay chưa
-            if (_context.Users.Any(u => u.Email == registerDTO.Email))
-            {
-                MessageBox.Show("Email này đã tồn tại!");
-                return false;
-            }
-            // kiểm tra xem username đã tồn tại hay chưa
-            if (_context.Users.Any(u => u.UserName == registerDTO.UserName))
-            {
-                MessageBox.Show("Tên người dùng này đã tồn tại!");
-                return false;
-            }
             var user = new User
             {
                 UserName = registerDTO.UserName,
@@ -80,56 +70,40 @@ namespace QLBS.BLL
                 Address = registerDTO.Address,
                 Role = "Customer"
             };
-            _context.Users.Add(user);
-            _context.SaveChanges();
+
+            if (!_userDAL.AddUser(user))
+            {
+                return false;
+            }
             return true;
         }
-        public bool updateUser(UserEditDTO user)
+        public bool updateUser(UserEditDTO userDTO)
         {
-            if (_context.Users.Any(u => u.Email == user.Email && u.ID != user.Id))
-            {
-                MessageBox.Show("Email này đã tồn tại!");
-                return false;
-            }
-            if (_context.Users.Any(u => u.UserName == user.UserName && u.ID != user.Id))
-            {
-                MessageBox.Show("Username này đã tồn tại!");
-                return false;
-            }
-            if (_context.Users.Any(u => u.Phone == user.Phone && u.ID != user.Id))
-            {
-                MessageBox.Show("Số điện thoại này đã tồn tại!");
-                return false;
-            }
-            var findUser = _context.Users.Find(user.Id);
-            if (findUser != null) {
-                findUser.Address = user.Address;
-                findUser.Name = user.Name;
-                findUser.Email = user.Email;
-                findUser.Phone = user.Phone;
-                findUser.UserName = user.UserName;
-                _context.SaveChanges();
-            }
-            else
+            var user = _userDAL.GetUserById(userDTO.Id);
+            if (user == null) return false;
+
+            user.Name = userDTO.Name;
+            user.Email = userDTO.Email;
+            user.Phone = userDTO.Phone;
+            user.Address = userDTO.Address;
+            user.UserName = userDTO.UserName;
+
+            if (!_userDAL.UpdateUser(user))
             {
                 return false;
             }
-            SessionManager.CurrentUser = findUser;
+
+            SessionManager.CurrentUser = user;
             return true;
         }
         public bool UpdatePassword(string username, string newPassword)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserName == username);
-            if (user == null)
-            {
-                // ko tìm thấy user
-                return false;
-            }
-            string newHashedPassword = PasswordUtils.getInstance().HashPassword(newPassword);
-            user.Password = newHashedPassword;
+            var user = _userDAL.GetUserByUsername(username);
+            if (user == null) return false;
+
+            user.Password = PasswordUtils.getInstance().HashPassword(newPassword);
             SessionManager.CurrentUser = user;
-            _context.SaveChanges();
-            return true;
+            return _userDAL.UpdateUser(user);
         }
     }
 }

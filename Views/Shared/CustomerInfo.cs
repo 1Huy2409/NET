@@ -87,6 +87,7 @@ namespace QLBS.Views.Customer.Info
                 {
                     // update thất bại
                     MessageBox.Show("Cập nhật thông tin thất bại!");
+                    return;
                 }
             }
             this.Close();
